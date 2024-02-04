@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cucimobil_app/controller/AuthController.dart';
 import 'package:cucimobil_app/pages/create/transactions_create.dart';
 import 'package:cucimobil_app/pages/detail/transactions_detail.dart';
+import 'package:cucimobil_app/pages/invoice/transaksi_all.dart';
+import 'package:cucimobil_app/pages/invoice/transaksi_invoice.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +17,7 @@ class Transactions extends StatefulWidget {
 }
 
 class _TransactionsState extends State<Transactions> {
+  final AuthController _authController = Get.find<AuthController>();
   final currencyFormatter =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
   final CollectionReference transaksiCollection =
@@ -90,6 +94,7 @@ class _TransactionsState extends State<Transactions> {
 
   @override
   Widget build(BuildContext context) {
+    UserRole currentUserRole = _authController.getCurrentUserRole();
     return Scaffold(
       backgroundColor: warna.background,
       appBar: AppBar(
@@ -144,6 +149,35 @@ class _TransactionsState extends State<Transactions> {
                 ),
                 SizedBox(height: 20),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (currentUserRole == UserRole.Owner) ...[
+                      Container(
+                          alignment: AlignmentDirectional.bottomEnd,
+                          width: 100,
+                          height: 30,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: warna.ungu,
+                              ),
+                              onPressed: () async {
+                                if (selectedDate != null) {
+                                  await printPdfByDate(
+                                      selectedDate!, filteredTransaksi);
+                                } else {
+                                  // Handle jika tanggal belum dipilih
+                                  print(
+                                      'Please select a date before generating PDF.');
+                                }
+                              },
+                              child: Text(
+                                "Generate",
+                                style: TextStyle(color: Colors.white),
+                              ))),
+                    ],
+                  ],
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
@@ -172,7 +206,7 @@ class _TransactionsState extends State<Transactions> {
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontFamily: 'OpenSans',
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -181,7 +215,7 @@ class _TransactionsState extends State<Transactions> {
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontFamily: 'OpenSans',
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -221,11 +255,22 @@ class _TransactionsState extends State<Transactions> {
                           as Map<String, dynamic>;
                       String namapelanggan = transaksiData['namapelanggan'];
                       String namaproduk = transaksiData['namaproduk'];
+                      int nomorunik = transaksiData['nomorunik'];
                       int qty = transaksiData['qty'];
                       double uangbayar =
                           transaksiData['uangbayar']?.toDouble() ?? 0.0;
+                      double hargaproduk =
+                          transaksiData['hargaproduk']?.toDouble() ?? 0.0;
                       double totalbelanja =
                           transaksiData['totalbelanja']?.toDouble() ?? 0.0;
+                      double uangkembali =
+                          transaksiData['uangkembali']?.toDouble() ?? 0.0;
+                      String created_at = transaksiData['created_at'] ?? '';
+
+                      DateTime dateTime =
+                          DateTime.tryParse(created_at) ?? DateTime.now();
+                      String formattedDate =
+                          DateFormat('dd-MM-yyyy HH:mm:ss').format(dateTime);
 
                       return GestureDetector(
                         child: Container(
@@ -276,7 +321,7 @@ class _TransactionsState extends State<Transactions> {
                                           ),
                                         ),
                                         Text(
-                                          "$namaproduk x $qty",
+                                          "Total Belanja : ${currencyFormatter.format(totalbelanja)}",
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey,
@@ -331,14 +376,37 @@ class _TransactionsState extends State<Transactions> {
                                                                   totalbelanja,
                                                             });
                                                       },
-                                                      child:
-                                                          Text("Detail"),
+                                                      child: Text("Detail"),
                                                     ),
                                                     TextButton(
                                                       onPressed: () {
-                                                        // Navigate to Edit screen or perform edit logic
                                                         Navigator.pop(context);
-                                                        // Add your logic for edit here
+                                                        Get.to(
+                                                            () =>
+                                                                TransaksiPdf(),
+                                                            arguments: {
+                                                              'id':
+                                                                  filteredTransaksi[
+                                                                          index]
+                                                                      .id,
+                                                              'nomorunik':
+                                                                  nomorunik,
+                                                              'namapelanggan':
+                                                                  namapelanggan,
+                                                              'namaproduk':
+                                                                  namaproduk,
+                                                              'uangbayar':
+                                                                  uangbayar,
+                                                              'hargaproduk':
+                                                                  hargaproduk,
+                                                              'qty': qty,
+                                                              'totalbelanja':
+                                                                  totalbelanja,
+                                                              'uangkembali':
+                                                                  uangkembali,
+                                                              'created_at':
+                                                                  created_at,
+                                                            });
                                                       },
                                                       child: Text("Laporan"),
                                                     ),
@@ -364,13 +432,15 @@ class _TransactionsState extends State<Transactions> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: warna.ungu,
-        onPressed: () {
-          Get.to(() => TransactionsCreate());
-        },
-        child: Icon(Icons.add, color: Colors.white),
-      ),
+      floatingActionButton: currentUserRole == UserRole.Kasir
+          ? FloatingActionButton(
+              backgroundColor: warna.ungu,
+              onPressed: () {
+                Get.to(() => TransactionsCreate());
+              },
+              child: Icon(Icons.add, color: Colors.white),
+            )
+          : null,
     );
   }
 }

@@ -114,6 +114,12 @@ class AuthController extends GetxController {
         Get.snackbar(
           'Login Error',
           'User not found or invalid credentials',
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.only(bottom: 75.0),
+          backgroundColor: warna.ungu,
+          colorText: warna.putih,
+          titleText: SizedBox.shrink(), // Menyembunyikan teks judul
+          snackStyle: SnackStyle.FLOATING,
         );
       }
     } catch (e) {
@@ -121,6 +127,25 @@ class AuthController extends GetxController {
         'Login Error',
         e.toString(),
       );
+    }
+  }
+
+  Future<void> updatePassword(
+      String userId, String newPassword, String confirmPassword) async {
+    try {
+      if (newPassword == confirmPassword) {
+        await _firestore.collection('users').doc(userId).update({
+          'password': newPassword,
+        });
+        print('behasil');
+        Get.snackbar('Success', 'Password updated successfully');
+      } else {
+        print('eror');
+        Get.snackbar('Error', 'Password and Confirm Password do not match');
+      }
+    } catch (e) {
+      Get.snackbar('Update Error', e.toString(),
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 

@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
+import 'package:cucimobil_app/pages/invoice/transaksi_laporan.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:open_file/open_file.dart';
 
 class TransaksiSukses extends StatefulWidget {
   final int nomorunik;
@@ -32,227 +35,237 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF573F7B),
-      body: Column(
-        children: [
-          Center(
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.all(10),
-                  child: Image(
-                    width: 100,
-                    height: 100,
-                    image: AssetImage("image/favicon.png"),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Transactions Success!",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'inter',
-                    fontSize: 24,
-                  ),
-                ),
-              ],
-            ),
+      body: Center(
+        child: Container(
+          margin: EdgeInsets.all(25),
+          width: 360,
+          height: 520,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(0)),
           ),
-          SizedBox(
-            height: 20,
-          ),
-          Container(
-            width: 360,
-            height: 533,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(0.0),
-                  bottomRight: Radius.circular(0.0),
-                )),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: EdgeInsets.all(20),
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        child: Container(
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(30),
+                alignment: AlignmentDirectional.centerStart,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: Container(
+                        child: Column(
+                          children: [
+                            Center(
+                              child: Column(
                                 children: [
-                                  Text(
-                                    "Rincian Pembelian",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                                  Container(
+                                    child: Image(
+                                      width: 100,
+                                      height: 100,
+                                      image: AssetImage("image/sukses.png"),
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Nomor Unik :",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Rincian Pembelian",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
-                                  Text(
-                                    "${widget.nomorunik}",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                    ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Nomor Unik :",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Nama Pelanggan :",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Text(
+                                  "${widget.nomorunik}",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
                                   ),
-                                  Text(
-                                    "${widget.namapelanggan}",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                    ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Nama Pelanggan :",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Nama Produk :",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Text(
+                                  "${widget.namapelanggan}",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
                                   ),
-                                  Text(
-                                    "${widget.namabarang}",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                    ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Nama Produk :",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Quantity :",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Text(
+                                  "${widget.namabarang}",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
                                   ),
-                                  Text(
-                                    "${widget.qty}",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                    ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Harga Produk :",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Total Bayar :",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Text(
+                                  "Rp. ${widget.hargasatuan}",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
                                   ),
-                                  Text(
-                                    "Rp. ${widget.totalbelanja}",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                    ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Quantity :",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Uang Kembali :",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                Text(
+                                  "${widget.qty}",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
                                   ),
-                                  Text(
-                                    "Rp. ${widget.uangkembali}",
-                                    style: TextStyle(
-                                      fontFamily: "Inter",
-                                    ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Total Bayar :",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 30,
-                              ),
-                              Container(
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.only(top: 20),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Get.back();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(0xFF573F7B),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 20),
-                                      minimumSize: Size(400, 50)),
-                                  child: Text(
-                                    "Selesai",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
+                                ),
+                                Text(
+                                  "Rp. ${widget.totalbelanja}",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Uang Kembali :",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "Rp. ${widget.uangkembali}",
+                                  style: TextStyle(
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Container(
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(top: 80),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  // Panggil fungsi generateEMSPDF untuk membuat PDF
+                                  Uint8List pdfBytes =
+                                      await EmsPdfService().generateEMSPDF(
+                                    widget.nomorunik,
+                                    widget.namapelanggan,
+                                    widget.namabarang,
+                                    widget.hargasatuan,
+                                    widget.qty,
+                                    widget.totalbelanja,
+                                    widget.uangbayar,
+                                    widget.uangkembali,
+                                    widget.created_at,
+                                  );
+
+                                  // Simpan PDF ke file
+                                  await EmsPdfService().savePdfFile(
+                                      "Invoice Transaksi", pdfBytes);
+
+                                  // Tampilkan PDF setelah disimpan
+                                  OpenFile.open("path/ke/file/NamaFilePDF.pdf");
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF573F7B),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 20),
+                                    minimumSize: Size(400, 50)),
+                                child: Text(
+                                  "Selesai",
+                                  style: TextStyle(
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

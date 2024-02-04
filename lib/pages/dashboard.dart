@@ -316,7 +316,8 @@ class DashboardList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
-      height: 80,
+      margin: EdgeInsets.all(10),
+      height: 100,
       width: 340,
       decoration: BoxDecoration(
         color: Color(0xFF573F7B),
@@ -325,18 +326,26 @@ class DashboardList extends StatelessWidget {
       child: ListTile(
         title: Text(
           title,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+          ),
         ),
         subtitle: Text(
           dataCount.toString(),
           style: TextStyle(color: Colors.white),
         ),
-        trailing: IconButton(
-          onPressed: () {},
-          icon: Icon(
-            icon,
-            size: 42,
-            color: Colors.white,
+        trailing: Container(
+          width: 50,
+          height: 50,
+          child: Center(
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(
+                icon,
+                size: 42,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),

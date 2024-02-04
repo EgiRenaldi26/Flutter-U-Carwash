@@ -1,6 +1,7 @@
 import 'package:cucimobil_app/controller/AuthController.dart';
 import 'package:cucimobil_app/controller/logController.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
+import 'package:cucimobil_app/pages/view/users_changepassword.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -27,6 +28,11 @@ class _UserDetailState extends State<UserDetail> {
     super.initState();
     final Map<String, dynamic>? args = Get.arguments;
     _selectedRole = args?['role'] ?? null;
+
+    // If the 'role' key doesn't exist in args, try 'selectedRole'
+    if (_selectedRole == null) {
+      _selectedRole = args?['selectedRole'] ?? null;
+    }
   }
 
   bool _isObscure = true;
@@ -99,32 +105,6 @@ class _UserDetailState extends State<UserDetail> {
               decoration: InputDecoration(
                 hintText: 'Exm. Egi Renaldi ',
                 labelText: 'Username',
-                labelStyle: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  fontFamily: 'Poppins',
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: passwordController,
-              obscureText: _isObscure,
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                  icon: Icon(
-                      _isObscure ? Icons.visibility : Icons.visibility_off),
-                  onPressed: togglePasswordVisibility,
-                ),
-                hintText: '***',
-                labelText: 'Password',
                 labelStyle: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -217,6 +197,37 @@ class _UserDetailState extends State<UserDetail> {
               ),
             ),
             SizedBox(height: 15),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  String userId = id; // Assuming id is the correct user ID
+                  Get.to(() => UserChange(userId: userId));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      warna.putih, // Set background color to orange
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                  ),
+                  side: BorderSide(
+                    color: warna.ungu, // Set border color
+                    width: 2.0, // Set border width
+                  ),
+                  minimumSize:
+                      Size(double.infinity, 50.0), // Set the height to 50.0
+                ),
+                child: Text(
+                  "Change Password",
+                  style: TextStyle(
+                    color: warna.ungu, // Set text color to white
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

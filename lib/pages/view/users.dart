@@ -161,6 +161,7 @@ class _UserState extends State<User> {
                         filteredusers[index].data() as Map<String, dynamic>;
                     String username = usersData['username'] ?? 'No Name';
                     String nama = usersData['name'] ?? 'No Name';
+                    String password = usersData['password'] ?? 'No Name';
                     String role = usersData['role'];
 
                     return GestureDetector(
@@ -171,8 +172,8 @@ class _UserState extends State<User> {
                           borderRadius: BorderRadius.circular(12),
                           color: Colors.white,
                         ),
-                        padding: const EdgeInsets.all(20),
-                        height: 110,
+                        padding: const EdgeInsets.all(10),
+                        height: 100,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -243,6 +244,8 @@ class _UserState extends State<User> {
                                   'id': filteredusers[index].id,
                                   'username': username,
                                   'name': nama,
+                                  'password': password,
+                                  'role': role,
                                 });
                               },
                               icon: Icon(Icons.more_horiz),
