@@ -81,30 +81,6 @@ class _ProductState extends State<Product> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'All Produk',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'Actions',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
                 SizedBox(height: 10),
               ],
             ),
@@ -154,9 +130,16 @@ class _ProductState extends State<Product> {
                   );
                 }
 
-                return ListView.builder(
+                return GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 0,
+                    mainAxisSpacing: 20,
+                    childAspectRatio:
+                        0.75, // Adjust this value to increase card size
+                  ),
                   itemCount: filteredProducts.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (BuildContext context, int index) {
                     var productsData =
                         filteredProducts[index].data() as Map<String, dynamic>;
                     String nama_produk =
@@ -167,82 +150,82 @@ class _ProductState extends State<Product> {
                         currencyFormatter.format(harga_produk);
                     String Deskripsi = productsData['deskripsi'] ?? 'No Name';
 
-                    return GestureDetector(
-                      child: Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.white,
-                        ),
-                        padding: const EdgeInsets.all(20),
-                        height: 94,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(right: 8.0),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      color: warna.ungu,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                    ),
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.car_crash_rounded,
-                                      color: Colors.white,
-                                    ),
+                    return Card(
+                      margin: EdgeInsets.only(
+                        left: 13,
+                        right: 13,
+                      ),
+                      elevation: 4, // Set elevation for the card
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: GestureDetector(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 120,
+                                width: 120,
+                                margin: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10),
                                   ),
-                                  // Circle with shopping icon
-
-                                  SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        nama_produk,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: "Poppins",
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        formattedPrice,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey,
-                                          fontFamily: "Poppins",
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
+                                ),
+                                padding: EdgeInsets.all(8.0),
                               ),
-                            ),
-                            SizedBox(width: 10),
-                            IconButton(
-                              onPressed: () {
-                                Get.to(() => ProductDetail(), arguments: {
-                                  'id': filteredProducts[index].id,
-                                  'namaproduk': nama_produk,
-                                  'hargaproduk': harga_produk,
-                                  'deskripsi': Deskripsi,
-                                });
-                              },
-                              icon: Icon(Icons.more_horiz),
-                              color: warna.ungu,
-                            ),
-                          ],
+                              SizedBox(height: 10),
+                              Container(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                  nama_produk,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: "Poppins",
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(left: 8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      formattedPrice,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                        fontFamily: "Poppins",
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        Get.to(() => ProductDetail(),
+                                            arguments: {
+                                              'id': filteredProducts[index].id,
+                                              'namaproduk': nama_produk,
+                                              'hargaproduk': harga_produk,
+                                              'deskripsi': Deskripsi,
+                                            });
+                                      },
+                                      icon: Icon(Icons.more_vert),
+                                      color: warna.ungu,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -253,12 +236,47 @@ class _ProductState extends State<Product> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: warna.ungu,
-        onPressed: () {
-          Get.to(() => ProductCreate());
-        },
-        child: Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Container(
+        margin: EdgeInsets.only(left: 40),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          border: Border.all(color: warna.ungu, width: 3), // Add border color
+          borderRadius: BorderRadius.circular(30), // Border radius
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(30),
+            onTap: () {
+              Get.to(() => ProductCreate());
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart,
+                    color: warna.ungu,
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    'Add Produk',
+                    style: TextStyle(
+                      color: warna.ungu,
+                      fontSize: 14,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
