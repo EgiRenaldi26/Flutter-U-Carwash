@@ -27,7 +27,7 @@ class _LogState extends State<Log> {
     return Scaffold(
       backgroundColor: warna.background,
       appBar: AppBar(
-        backgroundColor: warna.appbar,
+        backgroundColor: warna.ungu,
         automaticallyImplyLeading: false,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
@@ -171,8 +171,9 @@ class _LogState extends State<Log> {
                         leading: Container(
                           margin: EdgeInsets.only(right: 8.0),
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
+                            shape: BoxShape.rectangle,
                             color: warna.ungu,
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                           padding: EdgeInsets.all(8.0),
                           child: Icon(
@@ -191,7 +192,7 @@ class _LogState extends State<Log> {
                         subtitle: Text(
                           activity,
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 12,
                             color: Colors.grey,
                             fontFamily: "Poppins",
                             fontWeight: FontWeight.bold,
@@ -201,10 +202,9 @@ class _LogState extends State<Log> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              DateFormat('yyyy-MM-dd HH:mm:ss')
-                                  .format(createdDateTime),
+                              DateFormat('dd/MM/yy').format(createdDateTime),
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: 12,
                               ),
                             ),
                           ],

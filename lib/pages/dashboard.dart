@@ -5,6 +5,7 @@ import 'package:cucimobil_app/controller/transactionController.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class Dashboard extends StatefulWidget {
@@ -57,10 +58,11 @@ class _DashboardState extends State<Dashboard> {
         title: Center(
           child: Text(
             "Dashboard",
-            style: TextStyle(
-                fontSize: 20,
-                fontFamily: "Poppins",
-                fontWeight: FontWeight.bold),
+            style: GoogleFonts.titanOne(
+                textStyle: TextStyle(
+              letterSpacing: .10,
+              fontWeight: FontWeight.normal,
+            )),
           ),
         ),
         actions: [
@@ -180,11 +182,12 @@ class _DashboardState extends State<Dashboard> {
           children: [
             Text(
               "Hi, ${_authController.userName}",
-              style: TextStyle(
-                  fontFamily: "Poppins",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 19,
-                  color: Colors.black),
+              style: GoogleFonts.titanOne(
+                  textStyle: TextStyle(
+                letterSpacing: .5,
+                fontWeight: FontWeight.normal,
+                fontSize: 20,
+              )),
             ),
 
             SizedBox(height: 10),

@@ -32,7 +32,7 @@ class _ProductState extends State<Product> {
     return Scaffold(
       backgroundColor: warna.background,
       appBar: AppBar(
-        backgroundColor: warna.appbar,
+        backgroundColor: warna.ungu,
         automaticallyImplyLeading: false,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(

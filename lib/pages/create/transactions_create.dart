@@ -173,7 +173,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                   decoration: InputDecoration(
                     hintText: 'Exm. Rp. 100.000',
                     label: Text(
-                      'Harga Produk',
+                      'Harga Paket',
                       style: TextStyle(
                         color: Colors.black87,
                         fontWeight: FontWeight.bold,

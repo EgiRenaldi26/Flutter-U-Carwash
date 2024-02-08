@@ -98,7 +98,7 @@ class _TransactionsState extends State<Transactions> {
     return Scaffold(
       backgroundColor: warna.background,
       appBar: AppBar(
-        backgroundColor: warna.appbar,
+        backgroundColor: warna.ungu,
         automaticallyImplyLeading: false,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
