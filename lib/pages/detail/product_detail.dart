@@ -33,7 +33,7 @@ class ProductDetail extends StatelessWidget {
         ),
         title: Center(
           child: Text(
-            "Form Produk",
+            "Form Paket",
             style:
                 TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
           ),
@@ -49,7 +49,7 @@ class ProductDetail extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Exm. Cuci VIP',
                 label: Text(
-                  'Nama Produk',
+                  'Nama Paket',
                   style: TextStyle(
                     color: Colors.black87,
                     fontWeight: FontWeight.bold,
@@ -72,7 +72,7 @@ class ProductDetail extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Exm. Rp.10.000',
                 label: Text(
-                  'Harga Produk',
+                  'Harga Paket',
                   style: TextStyle(
                     color: Colors.black87,
                     fontWeight: FontWeight.bold,

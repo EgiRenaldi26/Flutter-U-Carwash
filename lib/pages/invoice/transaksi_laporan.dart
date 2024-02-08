@@ -53,31 +53,17 @@ class EmsPdfService {
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
                     pw.Text(
-                      "Kasir : Egi Renaldi",
-                      style: pw.TextStyle(
-                        fontSize: 16,
-                        font: pw.Font.timesBold(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              pw.Container(
-                margin: pw.EdgeInsets.symmetric(vertical: 10),
-                child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text(
                       "No Transaksi : $nomorunik",
                       style: pw.TextStyle(
-                        fontSize: 16,
-                        
+                        fontSize: 12,
+                        font: pw.Font.courier(),
                       ),
                     ),
                     pw.Text(
                       "Tgl : $created_at",
                       style: pw.TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
+                        font: pw.Font.courier(),
                       ),
                     ),
                   ],
@@ -96,12 +82,14 @@ class EmsPdfService {
                       "Nama Pelanggan : ",
                       style: pw.TextStyle(
                         fontSize: 14,
+                        font: pw.Font.courier(),
                       ),
                     ),
                     pw.Text(
                       "$namapelanggan",
                       style: pw.TextStyle(
                         fontSize: 14,
+                        font: pw.Font.courier(),
                       ),
                     ),
                   ],
@@ -116,12 +104,14 @@ class EmsPdfService {
                       "Nama Produk : ",
                       style: pw.TextStyle(
                         fontSize: 14,
+                        font: pw.Font.courier(),
                       ),
                     ),
                     pw.Text(
                       "$namaproduk",
                       style: pw.TextStyle(
                         fontSize: 14,
+                        font: pw.Font.courier(),
                       ),
                     ),
                   ],
@@ -136,12 +126,14 @@ class EmsPdfService {
                       "Harga Produk : ",
                       style: pw.TextStyle(
                         fontSize: 14,
+                        font: pw.Font.courier(),
                       ),
                     ),
                     pw.Text(
                       "${currencyFormatter.format(hargaproduk)}",
                       style: pw.TextStyle(
                         fontSize: 14,
+                        font: pw.Font.courier(),
                       ),
                     ),
                   ],
@@ -156,12 +148,14 @@ class EmsPdfService {
                       "Quantity : ",
                       style: pw.TextStyle(
                         fontSize: 14,
+                        font: pw.Font.courier(),
                       ),
                     ),
                     pw.Text(
                       "$qty",
                       style: pw.TextStyle(
                         fontSize: 14,
+                        font: pw.Font.courier(),
                       ),
                     ),
                   ],
@@ -179,13 +173,15 @@ class EmsPdfService {
                     pw.Text(
                       "Total Belanja :  ${currencyFormatter.format(totalbelanja)}",
                       style: pw.TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
+                        font: pw.Font.courier(),
                       ),
                     ),
                     pw.Text(
                       "Total Bayar : ${currencyFormatter.format(uangbayar)}",
                       style: pw.TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
+                        font: pw.Font.courier(),
                       ),
                     ),
                   ],
@@ -200,7 +196,8 @@ class EmsPdfService {
                     pw.Text(
                       "Uang Kembali : ${currencyFormatter.format(uangkembali)}",
                       style: pw.TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
+                        font: pw.Font.courier(),
                       ),
                     ),
                   ],
@@ -217,6 +214,7 @@ class EmsPdfService {
                       style: pw.TextStyle(
                         fontWeight: pw.FontWeight.bold,
                         fontSize: 16,
+                        font: pw.Font.courier(),
                       ),
                     ),
                   ],

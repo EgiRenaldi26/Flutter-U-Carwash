@@ -41,7 +41,39 @@ Future<void> printPdfByDate(
           child: pw.Column(
             children: [
               pw.Text('LAPORAN TRANSAKSI', style: pw.TextStyle(fontSize: 16)),
-              pw.SizedBox(height: 50),
+              pw.SizedBox(
+                height: 10,
+              ),
+              pw.Center(
+                child: pw.Text(
+                  "Jl. Arief Rahman Hakim No.35, Cigadung, Kec. Subang, Kabupaten Subang, Jawa Barat 41213",
+                  style: pw.TextStyle(
+                    fontSize: 8,
+                  ),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Divider(
+                thickness: 2,
+              ),
+              pw.SizedBox(height: 25),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text(
+                    "PT U - CARWASH",
+                    style: pw.TextStyle(
+                        fontSize: 12, fontBold: pw.Font.helveticaBold()),
+                  ),
+                  pw.Text(
+                    "Tanggal : ${DateFormat('yyyy-MM-dd').format(selectedDate)}",
+                    style: pw.TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 25),
               pw.Container(
                 width: double.infinity,
                 child: pw.Table.fromTextArray(
@@ -59,7 +91,7 @@ Future<void> printPdfByDate(
                     'Total Belanja',
                     'Uang Bayar',
                     'Uang Kembali',
-                    'Created',
+                    'Created At',
                   ],
                   data: List<List<String>>.generate(
                     transactionsByDate.length,

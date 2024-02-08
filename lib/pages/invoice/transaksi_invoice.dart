@@ -89,26 +89,51 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                     Divider(thickness: 2),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "No Transaksi : $nomorunik",
+                          "Tgl :",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
                         ),
                         Text(
-                          "Tgl : $created_at",
+                          "$created_at",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
-                            fontSize: 8,
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
-                    Divider(thickness: 2),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "No Transaksi :",
+                          style: TextStyle(
+                            fontFamily: "Courier",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        Text(
+                          "$nomorunik",
+                          style: TextStyle(
+                            fontFamily: "Courier",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Divider(
+                      thickness: 2,
+                    ),
                     SizedBox(
                       height: 10,
                     ),
@@ -118,7 +143,7 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         Text(
                           "Rincian Pembelian",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -134,14 +159,14 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         Text(
                           "Nama Pelanggan :",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "$namapelanggan",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                           ),
                         ),
                       ],
@@ -152,14 +177,14 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         Text(
                           "Nama Produk :",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "$namaproduk",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                           ),
                         ),
                       ],
@@ -170,14 +195,14 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         Text(
                           "Harga Produk :",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "${currencyFormatter.format(hargaproduk)}",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                           ),
                         ),
                       ],
@@ -188,14 +213,14 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         Text(
                           "Quantity :",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "$qty",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                           ),
                         ),
                       ],
@@ -210,14 +235,14 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         Text(
                           "Total Belanja :",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "${currencyFormatter.format(totalbelanja)}",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                           ),
                         ),
                       ],
@@ -228,14 +253,14 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         Text(
                           "Uang Bayar :",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "${currencyFormatter.format(uangbayar)}",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                           ),
                         ),
                       ],
@@ -253,14 +278,14 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         Text(
                           "Uang Kembali :",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "${currencyFormatter.format(uangkembali)}",
                           style: TextStyle(
-                            fontFamily: "Inter",
+                            fontFamily: "Courier",
                           ),
                         ),
                       ],

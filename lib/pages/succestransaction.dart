@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:cucimobil_app/pages/invoice/transaksi_laporan.dart';
+import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 
 class TransaksiSukses extends StatefulWidget {
@@ -34,12 +36,39 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF573F7B),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: warna.putih,
+          ), // Menggunakan widget Icon untuk menampilkan ikon
+          onPressed: () {
+            Get.back();
+          },
+        ),
+        backgroundColor: warna.appbar,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(15), // Atur nilai sesuai keinginan
+          ),
+        ),
+        title: Center(
+          child: Text(
+            'Detail Transaksi',
+            style: TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: warna.putih,
+            ),
+          ),
+        ),
+      ),
       body: Center(
         child: Container(
           margin: EdgeInsets.all(25),
           width: 360,
-          height: 520,
+          height: 580,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(0)),
@@ -70,7 +99,13 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                               ),
                             ),
                             SizedBox(
-                              height: 20,
+                              height: 5,
+                            ),
+                            Divider(
+                              thickness: 3,
+                            ),
+                            SizedBox(
+                              height: 5,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,7 +113,7 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                 Text(
                                   "Rincian Pembelian",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "courier",
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
@@ -94,14 +129,14 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                 Text(
                                   "Nomor Unik :",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "poppins",
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "${widget.nomorunik}",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "courier",
                                   ),
                                 ),
                               ],
@@ -112,14 +147,14 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                 Text(
                                   "Nama Pelanggan :",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "poppins",
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "${widget.namapelanggan}",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "courier",
                                   ),
                                 ),
                               ],
@@ -130,14 +165,14 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                 Text(
                                   "Nama Produk :",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "poppins",
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "${widget.namabarang}",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "courier",
                                   ),
                                 ),
                               ],
@@ -148,14 +183,14 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                 Text(
                                   "Harga Produk :",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "poppins",
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "Rp. ${widget.hargasatuan}",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "courier",
                                   ),
                                 ),
                               ],
@@ -166,14 +201,14 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                 Text(
                                   "Quantity :",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "poppins",
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "${widget.qty}",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "courier",
                                   ),
                                 ),
                               ],
@@ -184,14 +219,14 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                 Text(
                                   "Total Bayar :",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "poppins",
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "Rp. ${widget.totalbelanja}",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "courier",
                                   ),
                                 ),
                               ],
@@ -202,14 +237,14 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                 Text(
                                   "Uang Kembali :",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "poppins",
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "Rp. ${widget.uangkembali}",
                                   style: TextStyle(
-                                    fontFamily: "Inter",
+                                    fontFamily: "courier",
                                   ),
                                 ),
                               ],
@@ -244,15 +279,32 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                   OpenFile.open("path/ke/file/NamaFilePDF.pdf");
                                 },
                                 style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF573F7B),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 20),
-                                    minimumSize: Size(400, 50)),
-                                child: Text(
-                                  "Selesai",
-                                  style: TextStyle(
-                                    color: Colors.white,
+                                  backgroundColor: Color(0xFF573F7B),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 20),
+                                  minimumSize: Size(400, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        10), // Ubah nilai sesuai keinginan
                                   ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.print,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "GENERATE INVOICE",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

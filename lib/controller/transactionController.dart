@@ -103,4 +103,26 @@ class TransaksiController extends GetxController {
       return 0;
     }
   }
+
+  Future<double> income() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('transactions').get();
+
+      double totalBelanja = 0;
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        // Ambil nilai total belanja dari setiap dokumen transaksi
+        double transaksiTotalBelanja = doc['totalbelanja'] ?? 0;
+
+        // Akumulasi total belanja
+        totalBelanja += transaksiTotalBelanja;
+      }
+
+      return totalBelanja;
+    } catch (e) {
+      print('Error calculating total belanja: $e');
+      return 0;
+    }
+  }
 }

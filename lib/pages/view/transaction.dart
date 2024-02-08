@@ -323,7 +323,7 @@ class _TransactionsState extends State<Transactions> {
                                         Text(
                                           "Total Belanja : ${currencyFormatter.format(totalbelanja)}",
                                           style: TextStyle(
-                                            fontSize: 14,
+                                            fontSize: 12,
                                             color: Colors.grey,
                                             fontFamily: "Poppins",
                                             fontWeight: FontWeight.bold,

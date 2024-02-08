@@ -7,4 +7,8 @@ class warna {
   static const Color putih = Color(0xFFF3F1F4);
   static const Color input = Color(0xFFD9D9D9);
   static const Color nav = Color(0xFF9C88C5);
+
+  static const Color box1 = Color(0xFF573F79);
+  static const Color box2 = Color(0xFFAE99E6);
+  static const Color box3 = Color(0xFF9283C8);
 }

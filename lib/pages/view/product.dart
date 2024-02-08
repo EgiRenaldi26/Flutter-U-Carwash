@@ -41,7 +41,7 @@ class _ProductState extends State<Product> {
         ),
         title: Center(
           child: Text(
-            'Produk',
+            'Paket',
             style: TextStyle(
               fontFamily: 'OpenSans',
               fontSize: 20,
@@ -185,24 +185,22 @@ class _ProductState extends State<Product> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  // Circle with shopping icon
                                   Container(
-                                    margin: EdgeInsets.only(
-                                        right:
-                                            8.0), // Adjust the margin as needed
+                                    margin: EdgeInsets.only(right: 8.0),
                                     decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: warna
-                                          .ungu, // You can change the color as desired
+                                      shape: BoxShape.rectangle,
+                                      color: warna.ungu,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
                                     ),
-                                    padding: EdgeInsets.all(
-                                        8.0), // Adjust the padding as needed
+                                    padding: EdgeInsets.all(8.0),
                                     child: Icon(
                                       Icons.car_crash_rounded,
-                                      color: Colors
-                                          .white, // You can change the color as desired
+                                      color: Colors.white,
                                     ),
                                   ),
+                                  // Circle with shopping icon
+
                                   SizedBox(width: 10),
                                   Column(
                                     crossAxisAlignment:

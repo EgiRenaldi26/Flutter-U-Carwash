@@ -122,7 +122,7 @@ class MyHomePage extends StatelessWidget {
         final List<Widget> selectedOptions = rolesOptions[roleIndex];
         final List<IconData> selectedIcons = _roleIcons[roleIndex];
         return CurvedNavigationBar(
-          backgroundColor: warna.nav,
+          backgroundColor: warna.ungu,
           color: warna.putih,
           items: List.generate(selectedOptions.length, (index) {
             return Icon(

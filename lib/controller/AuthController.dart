@@ -13,6 +13,7 @@ class AuthController extends GetxController {
   Rx<User?> firebaseUser = Rx<User?>(null);
 
   RxString userName = RxString('');
+  
 
   Rx<UserRole> userRole = UserRole.Admin.obs;
 

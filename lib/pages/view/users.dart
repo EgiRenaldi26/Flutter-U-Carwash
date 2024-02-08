@@ -184,20 +184,17 @@ class _UserState extends State<User> {
                                 children: [
                                   // Circle with shopping icon
                                   Container(
-                                    margin: EdgeInsets.only(
-                                        right:
-                                            8.0), // Adjust the margin as needed
+                                    margin: EdgeInsets.only(right: 8.0),
                                     decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: warna
-                                          .ungu, // You can change the color as desired
+                                      shape: BoxShape.rectangle,
+                                      color: warna.ungu,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
                                     ),
-                                    padding: EdgeInsets.all(
-                                        8.0), // Adjust the padding as needed
+                                    padding: EdgeInsets.all(8.0),
                                     child: Icon(
-                                      Icons.person_2_rounded,
-                                      color: Colors
-                                          .white, // You can change the color as desired
+                                      Icons.person,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   SizedBox(width: 10),
@@ -217,7 +214,7 @@ class _UserState extends State<User> {
                                       Text(
                                         username,
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           color: Colors.grey,
                                           fontFamily: "Poppins",
                                           fontWeight: FontWeight.bold,
@@ -226,7 +223,7 @@ class _UserState extends State<User> {
                                       Text(
                                         role,
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           color: Colors.grey,
                                           fontFamily: "Poppins",
                                           fontWeight: FontWeight.bold,

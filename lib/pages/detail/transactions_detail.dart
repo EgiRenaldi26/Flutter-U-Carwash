@@ -221,7 +221,7 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
               padding: EdgeInsets.all(10),
               height: 50,
               child: DropdownButton<String>(
-                hint: Text('Pilih Produk'),
+                hint: Text('Pilih Paket'),
                 value: _selectedProduct,
                 onChanged: (String? newValue) {
                   setState(() {
@@ -248,7 +248,7 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
               decoration: InputDecoration(
                 hintText: 'Exm. Rp. 100.000',
                 label: Text(
-                  'Harga Produk',
+                  'Harga Paket',
                   style: TextStyle(
                     color: Colors.black87,
                     fontWeight: FontWeight.bold,

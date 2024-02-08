@@ -30,7 +30,7 @@ class _ProductCreateState extends State<ProductCreate> {
           ),
           backgroundColor: warna.background,
           title: Text(
-            'Form Produk',
+            'Form Paket',
             style: TextStyle(
               fontFamily: 'OpenSans',
               fontSize: 20,
@@ -49,7 +49,7 @@ class _ProductCreateState extends State<ProductCreate> {
                 decoration: InputDecoration(
                   hintText: 'Exm. Detailling',
                   label: Text(
-                    'Nama Produk',
+                    'Nama Paket',
                     style: TextStyle(
                       color: Colors.black87,
                       fontWeight: FontWeight.bold,
@@ -72,7 +72,7 @@ class _ProductCreateState extends State<ProductCreate> {
                 decoration: InputDecoration(
                   hintText: 'Exm. Rp. 100.000',
                   label: Text(
-                    'Harga Produk',
+                    'Harga Paket',
                     style: TextStyle(
                       color: Colors.black87,
                       fontWeight: FontWeight.bold,
