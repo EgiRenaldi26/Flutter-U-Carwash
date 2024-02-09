@@ -355,7 +355,6 @@ class _TransactionsState extends State<Transactions> {
                                                   children: [
                                                     TextButton(
                                                       onPressed: () {
-                                                        // Navigate to Detail screen
                                                         Navigator.pop(context);
                                                         Get.to(
                                                             () =>

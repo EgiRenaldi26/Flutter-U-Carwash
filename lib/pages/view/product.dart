@@ -172,12 +172,19 @@ class _ProductState extends State<Product> {
                                 margin: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.rectangle,
-                                  color: Colors.grey,
+                                  color: const Color.fromARGB(255, 31, 10, 63),
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(10),
                                   ),
                                 ),
                                 padding: EdgeInsets.all(8.0),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.image_not_supported_rounded,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
+                                ),
                               ),
                               SizedBox(height: 10),
                               Container(

@@ -5,7 +5,6 @@ import 'package:cucimobil_app/controller/transactionController.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class Dashboard extends StatefulWidget {
@@ -16,24 +15,16 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  String getFormattedDate() {
-    var now = DateTime.now();
-    var formatter = DateFormat('dd-MM-yyyy');
-    String formattedDate = formatter.format(now);
-    return formattedDate;
-  }
-
   final currencyFormatter =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+
   final AuthController _authController = Get.find<AuthController>();
   final ProductController _productController = Get.put(ProductController());
   final AuthController _userController = Get.put(AuthController());
   final LogController _logController = Get.put(LogController());
-  final TransaksiController _transaksiController =
+  final TransaksiController _transactionController =
       Get.put(TransaksiController());
 
-  // Define _selectedIndex here
-  final RxInt _selectedIndex = 0.obs;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -58,11 +49,10 @@ class _DashboardState extends State<Dashboard> {
         title: Center(
           child: Text(
             "Dashboard",
-            style: GoogleFonts.titanOne(
-                textStyle: TextStyle(
-              letterSpacing: .10,
-              fontWeight: FontWeight.normal,
-            )),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ),
         actions: [
@@ -94,9 +84,9 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     child: Icon(
                       Icons.person,
-                      color: warna.putih, // Ubah warna ikon
+                      color: warna.putih,
                     ),
-                  ), // Tambahkan ikon
+                  ),
                   title: Text(
                     _authController.userName.value.capitalize ?? '',
                     style: TextStyle(
@@ -182,14 +172,12 @@ class _DashboardState extends State<Dashboard> {
           children: [
             Text(
               "Hi, ${_authController.userName}",
-              style: GoogleFonts.titanOne(
-                  textStyle: TextStyle(
-                letterSpacing: .5,
-                fontWeight: FontWeight.normal,
-                fontSize: 20,
-              )),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 14,
+              ),
             ),
-
             SizedBox(height: 10),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -205,10 +193,9 @@ class _DashboardState extends State<Dashboard> {
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey, // Warna bayangan
-                          blurRadius: 10, // Radius blur bayangan
-                          offset: Offset(
-                              0, 1), // Posisi bayangan (horizontal, vertical)
+                          color: Colors.grey,
+                          blurRadius: 10,
+                          offset: Offset(0, 1),
                         ),
                       ],
                     ),
@@ -236,10 +223,8 @@ class _DashboardState extends State<Dashboard> {
                             children: [
                               IconTheme(
                                 data: IconThemeData(
-                                  color: Colors
-                                      .white, // Ganti warna ikon sesuai keinginan Anda
-                                  size:
-                                      30.0, // Ganti ukuran ikon sesuai keinginan Anda
+                                  color: Colors.white,
+                                  size: 30.0,
                                 ),
                                 child: Icon(
                                   Icons.attach_money_sharp,
@@ -249,7 +234,7 @@ class _DashboardState extends State<Dashboard> {
                                 width: 5,
                               ),
                               FutureBuilder<double>(
-                                future: TransaksiController().income(),
+                                future: _transactionController.income(),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -259,7 +244,7 @@ class _DashboardState extends State<Dashboard> {
                                   } else {
                                     double totalBelanja = snapshot.data ?? 0;
                                     return Text(
-                                      "${currencyFormatter.format(totalBelanja)}", // Format sesuai kebutuhan
+                                      "${currencyFormatter.format(totalBelanja)}",
                                       style: TextStyle(
                                         color: warna.putih,
                                         fontWeight: FontWeight.normal,
@@ -274,10 +259,8 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               IconTheme(
                                 data: IconThemeData(
-                                  color: Colors
-                                      .white, // Ganti warna ikon sesuai keinginan Anda
-                                  size:
-                                      50.0, // Ganti ukuran ikon sesuai keinginan Anda
+                                  color: Colors.white,
+                                  size: 50.0,
                                 ),
                                 child: Icon(
                                   Icons.trending_up,
@@ -288,7 +271,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         Center(
                           child: Container(
-                            width: 250.0, // Ganti nilai sesuai keinginan Anda
+                            width: 250.0,
                             child: Divider(
                               thickness: 4.0,
                             ),
@@ -332,10 +315,9 @@ class _DashboardState extends State<Dashboard> {
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey, // Warna bayangan
-                          blurRadius: 10, // Radius blur bayangan
-                          offset: Offset(
-                              0, 1), // Posisi bayangan (horizontal, vertical)
+                          color: Colors.grey,
+                          blurRadius: 10,
+                          offset: Offset(0, 1),
                         ),
                       ],
                     ),
@@ -363,10 +345,8 @@ class _DashboardState extends State<Dashboard> {
                             children: [
                               IconTheme(
                                 data: IconThemeData(
-                                  color: Colors
-                                      .white, // Ganti warna ikon sesuai keinginan Anda
-                                  size:
-                                      30.0, // Ganti ukuran ikon sesuai keinginan Anda
+                                  color: Colors.white,
+                                  size: 30.0,
                                 ),
                                 child: Icon(
                                   Icons.date_range,
@@ -376,7 +356,7 @@ class _DashboardState extends State<Dashboard> {
                                 width: 5,
                               ),
                               Text(
-                                "${getFormattedDate()}", // Format sesuai kebutuhan
+                                "${_getFormattedDate()}",
                                 style: TextStyle(
                                   color: warna.putih,
                                   fontWeight: FontWeight.normal,
@@ -388,10 +368,8 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               IconTheme(
                                 data: IconThemeData(
-                                  color: Colors
-                                      .white, // Ganti warna ikon sesuai keinginan Anda
-                                  size:
-                                      50.0, // Ganti ukuran ikon sesuai keinginan Anda
+                                  color: Colors.white,
+                                  size: 50.0,
                                 ),
                                 child: Icon(
                                   Icons.cloud_sync,
@@ -402,7 +380,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         Center(
                           child: Container(
-                            width: 250.0, // Ganti nilai sesuai keinginan Anda
+                            width: 250.0,
                             child: Divider(
                               thickness: 4.0,
                             ),
@@ -427,134 +405,152 @@ class _DashboardState extends State<Dashboard> {
                       ],
                     ),
                   ),
-
-                  // Tambahkan container lainnya sesuai kebutuhan
                 ],
               ),
             ),
-
             SizedBox(
               height: 15,
             ),
             Text(
               "List Menu",
               style: TextStyle(
-                  fontFamily: "Poppins",
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Colors.black87),
+                fontFamily: "Poppins",
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: Colors.black87,
+              ),
             ),
             SizedBox(height: 10),
-
             // Hak Akses Untuk Admin
             if (currentUserRole == UserRole.Admin) ...[
-              FutureBuilder<int>(
-                future: ProductController()
-                    .countProducts(), // Change to direct instantiation
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    int productsCount = snapshot.data ?? 0;
-                    return DashboardList(
-                      title: 'Data Products',
-                      icon: Icons.car_crash_rounded,
-                      dataCount: productsCount,
-                    );
-                  }
-                },
-              ),
-              FutureBuilder<int>(
-                future: AuthController()
-                    .countUser(), // Change to direct instantiation
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    int usersCount = snapshot.data ?? 0;
-                    return DashboardList(
-                      title: 'Data Users',
-                      icon: Icons.person_2,
-                      dataCount: usersCount,
-                    );
-                  }
-                },
-              ),
+              _buildAdminDashboardList(),
             ],
             // Hak Akses Untuk Kasir
             if (currentUserRole == UserRole.Kasir) ...[
-              FutureBuilder<int>(
-                future: TransaksiController()
-                    .countTransactions(), // Change to direct instantiation
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    int transactionsCount = snapshot.data ?? 0;
-                    return DashboardList(
-                      title: 'Data Transaksi',
-                      icon: Icons.swap_horizontal_circle,
-                      dataCount: transactionsCount,
-                    );
-                  }
-                },
-              ),
+              _buildKasirDashboardList(),
             ],
-
             // Hak Akses Untuk Owner
             if (currentUserRole == UserRole.Owner) ...[
-              FutureBuilder<int>(
-                future: TransaksiController()
-                    .countTransactions(), // Change to direct instantiation
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    int transactionsCount = snapshot.data ?? 0;
-                    return DashboardList(
-                      title: 'Data Transaksi',
-                      icon: Icons.swap_horizontal_circle,
-                      dataCount: transactionsCount,
-                    );
-                  }
-                },
-              ),
-              FutureBuilder<int>(
-                future: LogController().countLog(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    int logCount = snapshot.data ?? 0;
-                    return DashboardList(
-                      title: 'Data Log',
-                      icon: Icons.history,
-                      dataCount: logCount,
-                    );
-                  }
-                },
-              ),
+              _buildOwnerDashboardList(),
             ],
           ],
         ),
       ),
     );
   }
+
+  Widget _buildAdminDashboardList() {
+    return Column(
+      children: [
+        FutureBuilder<int>(
+          future: _productController.countProducts(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              int productsCount = snapshot.data ?? 0;
+              return DashboardList(
+                title: 'Data Products',
+                icon: Icons.car_crash_rounded,
+                dataCount: productsCount,
+              );
+            }
+          },
+        ),
+        FutureBuilder<int>(
+          future: _userController.countUser(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              int usersCount = snapshot.data ?? 0;
+              return DashboardList(
+                title: 'Data Users',
+                icon: Icons.person_2,
+                dataCount: usersCount,
+              );
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildKasirDashboardList() {
+    return FutureBuilder<int>(
+      future: _transactionController.countTransactions(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          int transactionsCount = snapshot.data ?? 0;
+          return DashboardList(
+            title: 'Data Transaksi',
+            icon: Icons.swap_horizontal_circle,
+            dataCount: transactionsCount,
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildOwnerDashboardList() {
+    return Column(
+      children: [
+        FutureBuilder<int>(
+          future: _transactionController.countTransactions(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              int transactionsCount = snapshot.data ?? 0;
+              return DashboardList(
+                title: 'Data Transaksi',
+                icon: Icons.swap_horizontal_circle,
+                dataCount: transactionsCount,
+              );
+            }
+          },
+        ),
+        FutureBuilder<int>(
+          future: _logController.countLog(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              int logCount = snapshot.data ?? 0;
+              return DashboardList(
+                title: 'Data Log',
+                icon: Icons.history,
+                dataCount: logCount,
+              );
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  String _getFormattedDate() {
+    var now = DateTime.now();
+    var formatter = DateFormat('dd-MM-yyyy');
+    return formatter.format(now);
+  }
 }
 
 class DashboardList extends StatelessWidget {
   final String title;
-  final IconData icon; // Change from String to IconData
+  final IconData icon;
   final int dataCount;
 
   const DashboardList({
@@ -575,9 +571,9 @@ class DashboardList extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey, // Warna bayangan
-            blurRadius: 1, // Radius blur bayangan
-            offset: Offset(0, 1), // Posisi bayangan (horizontal, vertical)
+            color: Colors.grey,
+            blurRadius: 1,
+            offset: Offset(0, 1),
           ),
         ],
       ),
