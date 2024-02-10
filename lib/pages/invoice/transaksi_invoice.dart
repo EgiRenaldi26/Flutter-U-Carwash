@@ -1,3 +1,4 @@
+import 'package:cucimobil_app/model/TransactionsItem.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,13 +19,11 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
     final String id = args?['id'] ?? '';
     final int nomorunik = args?['nomorunik'] ?? '';
     final String namapelanggan = args?['namapelanggan'] ?? '';
-    final String namaproduk = args?['namaproduk'] ?? '';
     final double uangbayar = args?['uangbayar'] ?? 0.0;
-    final double hargaproduk = args?['hargaproduk'] ?? 0.0;
     final double totalbelanja = args?['totalbelanja'] ?? 0.0;
     final double uangkembali = args?['uangkembali'] ?? 0.0;
-    final int qty = args?['qty'] ?? 0;
     final String created_at = args?['created_at'] ?? '';
+    final List<dynamic> items = args?['items'] ?? [];
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -138,14 +137,16 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                       height: 10,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "Rincian Pembelian",
-                          style: TextStyle(
-                            fontFamily: "Courier",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                        Center(
+                          child: Text(
+                            "Rincian Pembelian",
+                            style: TextStyle(
+                              fontFamily: "Courier",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ],
@@ -171,63 +172,21 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                         ),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Nama Produk :",
-                          style: TextStyle(
-                            fontFamily: "Courier",
-                            fontWeight: FontWeight.bold,
+                    Container(
+                      width: double.infinity,
+                      height: 100.0,
+                      child: SingleChildScrollView(
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              for (var item in items)
+                                buildProductDetailRow(item),
+                            ],
                           ),
                         ),
-                        Text(
-                          "$namaproduk",
-                          style: TextStyle(
-                            fontFamily: "Courier",
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Harga Produk :",
-                          style: TextStyle(
-                            fontFamily: "Courier",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "${currencyFormatter.format(hargaproduk)}",
-                          style: TextStyle(
-                            fontFamily: "Courier",
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Quantity :",
-                          style: TextStyle(
-                            fontFamily: "Courier",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "$qty",
-                          style: TextStyle(
-                            fontFamily: "Courier",
-                          ),
-                        ),
-                      ],
-                    ),
-                    Divider(thickness: 2),
-                    SizedBox(
-                      height: 15,
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -264,13 +223,6 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                           ),
                         ),
                       ],
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Divider(thickness: 2),
-                    SizedBox(
-                      height: 15,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -326,4 +278,49 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
       ),
     );
   }
+}
+
+Widget buildProductDetailRow(TransactionItem item) {
+  final currencyFormatter =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+
+  String formattedPrice = currencyFormatter.format(item.hargaProduk);
+  String formattedTotal = currencyFormatter.format(item.totalBelanja);
+
+  return Container(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "${item.namaProduk}",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'courier',
+              ),
+            ),
+            Text(
+              "Harga : ${item.totalBelanja}",
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'courier',
+              ),
+            ),
+          ],
+        ),
+        Text(
+          "x ${item.qty}",
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'courier',
+          ),
+        ),
+      ],
+    ),
+  );
 }

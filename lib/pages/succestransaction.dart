@@ -1,32 +1,13 @@
-import 'dart:typed_data';
-
-import 'package:cucimobil_app/pages/invoice/transaksi_laporan.dart';
+import 'package:cucimobil_app/model/TransactionsItem.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:open_file/open_file.dart';
+import 'package:intl/intl.dart';
 
 class TransaksiSukses extends StatefulWidget {
-  final int nomorunik;
-  final String namapelanggan;
-  final String namabarang;
-  final double hargasatuan;
-  final int qty;
-  final double totalbelanja;
-  final double uangbayar;
-  final double uangkembali;
-  final String created_at;
+  final String transactionId;
 
-  const TransaksiSukses(
-      {required this.nomorunik,
-      required this.namapelanggan,
-      required this.namabarang,
-      required this.hargasatuan,
-      required this.qty,
-      required this.totalbelanja,
-      required this.uangbayar,
-      required this.uangkembali,
-      required this.created_at});
+  TransaksiSukses({required this.transactionId});
 
   @override
   State<TransaksiSukses> createState() => _TransaksiSuksesState();
@@ -134,7 +115,7 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                   ),
                                 ),
                                 Text(
-                                  "${widget.nomorunik}",
+                                  "- :",
                                   style: TextStyle(
                                     fontFamily: "courier",
                                   ),
@@ -152,61 +133,7 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                   ),
                                 ),
                                 Text(
-                                  "${widget.namapelanggan}",
-                                  style: TextStyle(
-                                    fontFamily: "courier",
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Nama Produk :",
-                                  style: TextStyle(
-                                    fontFamily: "poppins",
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  "${widget.namabarang}",
-                                  style: TextStyle(
-                                    fontFamily: "courier",
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Harga Produk :",
-                                  style: TextStyle(
-                                    fontFamily: "poppins",
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  "Rp. ${widget.hargasatuan}",
-                                  style: TextStyle(
-                                    fontFamily: "courier",
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Quantity :",
-                                  style: TextStyle(
-                                    fontFamily: "poppins",
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  "${widget.qty}",
+                                  "- ",
                                   style: TextStyle(
                                     fontFamily: "courier",
                                   ),
@@ -224,7 +151,7 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                   ),
                                 ),
                                 Text(
-                                  "Rp. ${widget.totalbelanja}",
+                                  "Rp. - ",
                                   style: TextStyle(
                                     fontFamily: "courier",
                                   ),
@@ -242,7 +169,7 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                                   ),
                                 ),
                                 Text(
-                                  "Rp. ${widget.uangkembali}",
+                                  "Rp. - ",
                                   style: TextStyle(
                                     fontFamily: "courier",
                                   ),
@@ -256,28 +183,7 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                               alignment: Alignment.center,
                               margin: EdgeInsets.only(top: 80),
                               child: ElevatedButton(
-                                onPressed: () async {
-                                  // Panggil fungsi generateEMSPDF untuk membuat PDF
-                                  Uint8List pdfBytes =
-                                      await EmsPdfService().generateEMSPDF(
-                                    widget.nomorunik,
-                                    widget.namapelanggan,
-                                    widget.namabarang,
-                                    widget.hargasatuan,
-                                    widget.qty,
-                                    widget.totalbelanja,
-                                    widget.uangbayar,
-                                    widget.uangkembali,
-                                    widget.created_at,
-                                  );
-
-                                  // Simpan PDF ke file
-                                  await EmsPdfService().savePdfFile(
-                                      "Invoice Transaksi", pdfBytes);
-
-                                  // Tampilkan PDF setelah disimpan
-                                  OpenFile.open("path/ke/file/NamaFilePDF.pdf");
-                                },
+                                onPressed: () async {},
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF573F7B),
                                   padding: EdgeInsets.symmetric(
@@ -321,4 +227,33 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
       ),
     );
   }
+}
+
+Widget buildProductDetailRow(TransactionItem item) {
+  final currencyFormatter =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+  return Container(
+    margin: EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '${item.namaProduk} x ${item.qty}',
+          style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey),
+        ),
+        Text(
+          '${currencyFormatter.format(item.totalBelanja)}',
+          style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey),
+        ),
+      ],
+    ),
+  );
 }

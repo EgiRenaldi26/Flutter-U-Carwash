@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cucimobil_app/controller/AuthController.dart';
+import 'package:cucimobil_app/model/Transactions.dart';
 import 'package:cucimobil_app/pages/create/transactions_create.dart';
 import 'package:cucimobil_app/pages/detail/transactions_detail.dart';
 import 'package:cucimobil_app/pages/invoice/transaksi_all.dart';
@@ -251,26 +252,13 @@ class _TransactionsState extends State<Transactions> {
                 : ListView.builder(
                     itemCount: filteredTransaksi.length,
                     itemBuilder: (context, index) {
-                      var transaksiData = filteredTransaksi[index].data()
-                          as Map<String, dynamic>;
-                      String namapelanggan = transaksiData['namapelanggan'];
-                      String namaproduk = transaksiData['namaproduk'];
-                      int nomorunik = transaksiData['nomorunik'];
-                      int qty = transaksiData['qty'];
-                      double uangbayar =
-                          transaksiData['uangbayar']?.toDouble() ?? 0.0;
-                      double hargaproduk =
-                          transaksiData['hargaproduk']?.toDouble() ?? 0.0;
-                      double totalbelanja =
-                          transaksiData['totalbelanja']?.toDouble() ?? 0.0;
-                      double uangkembali =
-                          transaksiData['uangkembali']?.toDouble() ?? 0.0;
-                      String created_at = transaksiData['created_at'] ?? '';
-
-                      DateTime dateTime =
-                          DateTime.tryParse(created_at) ?? DateTime.now();
-                      String formattedDate =
-                          DateFormat('dd-MM-yyyy HH:mm:ss').format(dateTime);
+                      var transaction = TransactionsM.fromMap(
+                          filteredTransaksi[index].data()
+                              as Map<String, dynamic>);
+                      String namaPembeli = transaction.namapelanggan;
+                      double totalbelanja = transaction.totalbelanja;
+                      String formattedTotalBelanja =
+                          currencyFormatter.format(totalbelanja.toDouble());
 
                       return GestureDetector(
                         child: Container(
@@ -305,7 +293,9 @@ class _TransactionsState extends State<Transactions> {
                                         color: Colors.white,
                                       ),
                                     ),
-                                    SizedBox(width: 10),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -313,7 +303,7 @@ class _TransactionsState extends State<Transactions> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          namapelanggan,
+                                          namaPembeli,
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontFamily: "Poppins",
@@ -354,26 +344,15 @@ class _TransactionsState extends State<Transactions> {
                                                       CrossAxisAlignment.end,
                                                   children: [
                                                     TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        Get.to(
-                                                            () =>
-                                                                TransaksiDetail(),
-                                                            arguments: {
-                                                              'id':
-                                                                  filteredTransaksi[
-                                                                          index]
-                                                                      .id,
-                                                              'namapelanggan':
-                                                                  namapelanggan,
-                                                              'namaproduk':
-                                                                  namaproduk,
-                                                              'qty': qty,
-                                                              'uangbayar':
-                                                                  uangbayar,
-                                                              'totalbelanja':
-                                                                  totalbelanja,
-                                                            });
+                                                      onPressed: () async {
+                                                        int nomorUnik =
+                                                            transaction
+                                                                    .nomorunik ??
+                                                                0;
+                                                        var result = await Get.to(
+                                                            () => TransaksiDetail(
+                                                                nomorUnik:
+                                                                    nomorUnik));
                                                       },
                                                       child: Text("Detail"),
                                                     ),
@@ -389,22 +368,25 @@ class _TransactionsState extends State<Transactions> {
                                                                           index]
                                                                       .id,
                                                               'nomorunik':
-                                                                  nomorunik,
+                                                                  transaction
+                                                                      .nomorunik,
                                                               'namapelanggan':
-                                                                  namapelanggan,
-                                                              'namaproduk':
-                                                                  namaproduk,
+                                                                  namaPembeli,
                                                               'uangbayar':
-                                                                  uangbayar,
-                                                              'hargaproduk':
-                                                                  hargaproduk,
-                                                              'qty': qty,
+                                                                  transaction
+                                                                      .uangbayar,
+                                                              'items':
+                                                                  transaction
+                                                                      .items,
                                                               'totalbelanja':
-                                                                  totalbelanja,
+                                                                  transaction
+                                                                      .totalbelanja,
                                                               'uangkembali':
-                                                                  uangkembali,
+                                                                  transaction
+                                                                      .uangkembali,
                                                               'created_at':
-                                                                  created_at,
+                                                                  transaction
+                                                                      .created_at,
                                                             });
                                                       },
                                                       child: Text("Laporan"),

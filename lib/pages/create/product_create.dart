@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cucimobil_app/controller/logController.dart';
 import 'package:cucimobil_app/controller/productController.dart';
 import 'package:cucimobil_app/model/Products.dart';
@@ -115,77 +117,32 @@ class _ProductCreateState extends State<ProductCreate> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    String namaProduk = productNameController.text.trim();
-                    String deskripsi = productDescController.text.trim();
-                    double hargaProduk =
+                    String namaproduk = productNameController.text.trim();
+                    double hargaproduk =
                         double.tryParse(productPriceController.text.trim()) ??
                             0.0;
-
-                    if (namaProduk.isNotEmpty && hargaProduk > 0) {
-                      ProductM newProduct = ProductM(
-                          namaproduk: namaProduk,
-                          hargaproduk: hargaProduk,
+                    String deskripsi = productDescController.text.trim();
+                    if (namaproduk.isNotEmpty && hargaproduk > 0) {
+                      ProductM newProducts = ProductM(
+                          id: Random().nextInt(1000).toString(),
+                          namaproduk: namaproduk,
+                          hargaproduk: hargaproduk,
                           deskripsi: deskripsi,
                           createdat: DateTime.now().toString(),
                           updatedat: DateTime.now().toString());
                       bool success =
-                          await _productController.addProduct(newProduct);
+                          await _productController.addProduct(newProducts);
 
                       if (success) {
                         _productController.shouldUpdate.value = true;
+                        _addLog('Created new Produk: $namaproduk');
                         Get.back();
-                        _addLog("Add Produk : $namaProduk");
-                        Get.snackbar(
-                          "Success",
-                          "Product added successfully",
-                          icon: Icon(
-                            Icons.check_circle,
-                            color: Colors
-                                .green, // Change the color to green or any other color
-                          ),
-                          snackPosition: SnackPosition.TOP,
-                          margin: EdgeInsets.only(bottom: 75.0),
-                          backgroundColor: warna.putih,
-                          colorText: Colors.black,
-                          titleText:
-                              SizedBox.shrink(), // Menyembunyikan teks judul
-                          snackStyle: SnackStyle.FLOATING,
-                        );
+                        Get.snackbar('Success', 'Produk added successfully!');
                       } else {
-                        Get.snackbar(
-                          'error',
-                          "Product gagal ditambahkan",
-                          icon: Icon(
-                            Icons.cancel,
-                            color: Colors
-                                .red, // Change the color to green or any other color
-                          ),
-                          snackPosition: SnackPosition.TOP,
-                          margin: EdgeInsets.only(bottom: 75.0),
-                          backgroundColor: warna.putih,
-                          colorText: Colors.black,
-                          titleText:
-                              SizedBox.shrink(), // Menyembunyikan teks judul
-                          snackStyle: SnackStyle.FLOATING,
-                        );
+                        print('Failed to add Produk, staying on /produkcreate');
                       }
                     } else {
-                      Get.snackbar(
-                        'error',
-                        "Product gagal ditambahkan",
-                        icon: Icon(
-                          Icons.cancel,
-                          color: Colors
-                              .red, // Change the color to green or any other color
-                        ),
-                        snackPosition: SnackPosition.TOP,
-                        margin: EdgeInsets.only(bottom: 75.0),
-                        backgroundColor: warna.putih,
-                        colorText: Colors.black,
-                        titleText:
-                            SizedBox.shrink(), // Menyembunyikan teks judul
-                        snackStyle: SnackStyle.FLOATING,
-                      );
+                      Get.snackbar('Error', 'Silakan lengkapi form.');
                     }
                   },
                   style: ElevatedButton.styleFrom(

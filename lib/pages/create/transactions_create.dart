@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cucimobil_app/controller/logController.dart';
 import 'package:cucimobil_app/controller/transactionController.dart';
 import 'package:cucimobil_app/model/Transactions.dart';
+import 'package:cucimobil_app/model/TransactionsItem.dart';
 import 'package:cucimobil_app/pages/succestransaction.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TransactionsCreate extends StatefulWidget {
-  const TransactionsCreate({super.key});
+  const TransactionsCreate({Key? key});
 
   @override
   State<TransactionsCreate> createState() => _TransactionsCreateState();
@@ -23,6 +24,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
   final currencyFormatter =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
   String? _selectedProduct;
+  String? _selectedProductId;
   List<String> produkList = [];
   double _hargaProduk = 0.0;
   double _totalBelanja = 0.0;
@@ -34,11 +36,107 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
   final TextEditingController _hargaProdukController = TextEditingController();
   final LogController logController = LogController();
 
+  List<Map<String, dynamic>> selectedProducts = [];
+
   void calculateTotalBelanja() {
     int qty = int.tryParse(_qtyController.text) ?? 0;
-    setState(() {
-      _totalBelanja = _hargaProduk * qty;
-    });
+
+    if (_hargaProduk != null && _selectedProduct != null && qty > 0) {
+      int existingProductIndex = selectedProducts
+          .indexWhere((product) => product['product'] == _selectedProduct);
+
+      if (existingProductIndex != -1) {
+        setState(() {
+          selectedProducts[existingProductIndex]['qty'] += qty;
+          selectedProducts[existingProductIndex]['total'] += _hargaProduk * qty;
+          _totalBelanja = selectedProducts.fold(
+              0.0, (sum, product) => sum + product['total']);
+        });
+      } else {
+        double totalBelanja = _hargaProduk * qty;
+        Map<String, dynamic> selectedProductData = {
+          'id': _selectedProductId!,
+          'product': _selectedProduct!,
+          'qty': qty,
+          'total': totalBelanja,
+        };
+
+        setState(() {
+          selectedProducts.add(selectedProductData);
+          _totalBelanja = selectedProducts.fold(
+              0.0, (sum, product) => sum + product['total']);
+        });
+      }
+      setState(() {
+        _selectedProduct = null;
+        _hargaProdukController.clear();
+        _qtyController.clear();
+      });
+    } else {
+      print('Harga produk tidak ditemukan atau qty tidak valid.');
+    }
+  }
+
+  Future<void> _submitTransaksi() async {
+    String namapelanggan = _namaPelangganController.text.trim();
+    double uangbayar = double.tryParse(
+            _uangBayarController.text.replaceAll(RegExp('[^0-9]'), '')) ??
+        0;
+
+    if (selectedProducts.isNotEmpty &&
+        uangbayar > 0 &&
+        namapelanggan.isNotEmpty &&
+        uangbayar >= _totalBelanja) {
+      double totalbelanja = _totalBelanja;
+      double uangkembali = uangbayar - totalbelanja;
+
+      int _nomor_unik = Random().nextInt(1000000000);
+      String _created_at = DateTime.now().toString();
+      String _updated_at = DateTime.now().toString();
+
+      List<TransactionItem> transactionItems = selectedProducts.map((product) {
+        return TransactionItem(
+          productId: product['id'],
+          namaProduk: product['product'],
+          hargaProduk: _hargaProduk,
+          qty: product['qty'],
+          totalBelanja: product['total'],
+        );
+      }).toList();
+
+      TransactionsM newTransaksi = TransactionsM(
+        nomorunik: _nomor_unik,
+        namapelanggan: namapelanggan,
+        items: transactionItems,
+        uangbayar: uangbayar,
+        totalbelanja: totalbelanja,
+        uangkembali: uangkembali,
+        created_at: _created_at,
+        updated_at: _updated_at,
+      );
+
+      bool success = await _transaksiController.addTransaksi(newTransaksi);
+
+      if (success) {
+        Get.snackbar('Success', 'Transaksi added successfully');
+
+        String newtransactionId = _nomor_unik.toString();
+
+        _namaPelangganController.clear();
+        _uangBayarController.clear();
+        _hargaProdukController.clear();
+        _totalBelanja = 0;
+        setState(() {
+          _selectedProduct = null;
+          selectedProducts.clear();
+          Get.to(() => TransaksiSukses(transactionId: newtransactionId));
+        });
+      } else {
+        Get.snackbar('Failed', 'Failed to add transaction to the database');
+      }
+    } else {
+      Get.snackbar('Failed', 'Please check your transaction details.');
+    }
   }
 
   void fetchPrice(String? selectedBook) async {
@@ -50,9 +148,11 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
 
       if (querySnapshot.docs.isNotEmpty) {
         double hargaproduk = querySnapshot.docs.first['hargaproduk'];
+        String productId = querySnapshot.docs.first.id;
 
         setState(() {
           _hargaProduk = hargaproduk;
+          _selectedProductId = productId; // Set selected product ID
           _hargaProdukController.text =
               "Rp. ${_hargaProduk.toStringAsFixed(2)}";
         });
@@ -77,32 +177,43 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
 
     setState(() {
       produkList = querySnapshot.docs
-          .map((doc) => doc['namaproduk'])
-          .toList()
-          .cast<String>();
+          .map((doc) => doc['namaproduk'].toString())
+          .toList();
     });
+  }
+
+  void _updateQty(int index, int newQty) {
+    if (newQty > 0) {
+      setState(() {
+        selectedProducts[index]['qty'] = newQty;
+        selectedProducts[index]['total'] = _hargaProduk * newQty;
+        _totalBelanja = selectedProducts.fold(
+            0.0, (sum, product) => sum + product['total']);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-            color: Colors.black,
-            icon: Icon(Icons.arrow_back_ios_new_rounded),
-            onPressed: () {
-              Get.back();
-            },
+        leading: IconButton(
+          color: Colors.black,
+          icon: Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () {
+            Get.back();
+          },
+        ),
+        backgroundColor: warna.background,
+        title: Text(
+          'Form Transaksi',
+          style: TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          backgroundColor: warna.background,
-          title: Text(
-            'Form Transaksi',
-            style: TextStyle(
-              fontFamily: 'OpenSans',
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          )),
+        ),
+      ),
       body: ListView(
         children: [
           Container(
@@ -115,15 +226,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                   controller: _namaPelangganController,
                   decoration: InputDecoration(
                     hintText: 'Exm. Egi Renaldi',
-                    label: Text(
-                      'Nama Pelanggan',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
+                    labelText: 'Nama Pelanggan',
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -132,9 +235,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -152,35 +253,23 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                         fetchPrice(newValue);
                       });
                     },
-                    dropdownColor: Colors
-                        .white, // Atur warna dropdown sesuai dengan latar belakang Container
-                    items: produkList.map<DropdownMenuItem<String>>(
-                      (String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      },
-                    ).toList(),
+                    dropdownColor: Colors.white,
+                    items: produkList
+                        .map<DropdownMenuItem<String>>((String product) {
+                      return DropdownMenuItem<String>(
+                        value: product,
+                        child: Text(product),
+                      );
+                    }).toList(),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 TextField(
                   controller: _hargaProdukController,
                   enabled: false,
                   decoration: InputDecoration(
                     hintText: 'Exm. Rp. 100.000',
-                    label: Text(
-                      'Harga Paket',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
+                    labelText: 'Harga Paket',
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -189,26 +278,16 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 TextField(
                   controller: _qtyController,
                   keyboardType: TextInputType.number,
                   onChanged: (value) {
-                    calculateTotalBelanja(); // Panggil calculateTotalBelanja ketika _qtyController berubah
+                    calculateTotalBelanja();
                   },
                   decoration: InputDecoration(
                     hintText: 'Exm. 50',
-                    label: Text(
-                      'QTY',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
+                    labelText: 'QTY',
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -217,23 +296,132 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
+                selectedProducts.isNotEmpty
+                    ? Container(
+                        height: 200,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                                selectedProducts.asMap().entries.map((entry) {
+                              int index = entry.key;
+                              Map<String, dynamic> product = entry.value;
+
+                              return Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                margin: EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      width: 200,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text('${product['product']}',
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold)),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              IconButton(
+                                                onPressed: () {
+                                                  _updateQty(index,
+                                                      product['qty'] - 1);
+                                                },
+                                                icon: Icon(
+                                                  Icons.remove,
+                                                  color: Colors.white,
+                                                ),
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          warna.ungu),
+                                                  shape:
+                                                      MaterialStateProperty.all<
+                                                          RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.0), // Ubah angka sesuai dengan radius yang diinginkan
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text('${product['qty']}',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              IconButton(
+                                                onPressed: () {
+                                                  _updateQty(index,
+                                                      product['qty'] + 1);
+                                                },
+                                                icon: Icon(
+                                                  Icons.add,
+                                                  color: Colors.white,
+                                                ),
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          warna.ungu),
+                                                  shape:
+                                                      MaterialStateProperty.all<
+                                                          RoundedRectangleBorder>(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.0), // Ubah angka sesuai dengan radius yang diinginkan
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedProducts.removeAt(index);
+                                          _totalBelanja = selectedProducts.fold(
+                                              0.0,
+                                              (sum, product) =>
+                                                  sum + product['total']);
+                                        });
+                                      },
+                                      icon: Icon(Icons.delete),
+                                      color: Colors.black,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      )
+                    : Container(),
+                SizedBox(height: 20),
                 TextField(
                   controller: _uangBayarController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: 'Exm. Rp. 100.000',
-                    label: Text(
-                      'Uang Bayar',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
+                    labelText: 'Uang Bayar',
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -242,9 +430,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Container(
                   margin: EdgeInsets.only(top: 10),
                   padding: EdgeInsets.all(10),
@@ -270,121 +456,24 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
-                      String namapembeli = _namaPelangganController.text.trim();
-                      int qty = int.tryParse(_qtyController.text.trim()) ?? 0;
-                      double uangbayar = double.tryParse(_uangBayarController
-                              .text
-                              .replaceAll(RegExp('[^0-9]'), '')) ??
-                          0;
-
-                      if (_selectedProduct != null &&
-                          qty > 0 &&
-                          uangbayar > 0 &&
-                          namapembeli.isNotEmpty &&
-                          uangbayar >= _totalBelanja) {
-                        double totalbelanja = _hargaProduk * qty;
-                        double uangkembali = uangbayar - totalbelanja;
-
-                        int _nomorunik = Random().nextInt(1000000000);
-                        String created_at = DateTime.now().toString();
-                        String updated_at = DateTime.now().toString();
-
-                        TransactionsM newTransaksi = TransactionsM(
-                          nomorunik: _nomorunik,
-                          namapelanggan: namapembeli,
-                          namaproduk: _selectedProduct!,
-                          hargaproduk: _hargaProduk,
-                          qty: qty,
-                          uangbayar: uangbayar,
-                          totalbelanja: totalbelanja,
-                          uangkembali: uangkembali,
-                          created_at: created_at,
-                          updated_at: updated_at,
-                        );
-                        _addLog("Add Transaksi : $namapembeli");
-                        Get.to(() => TransaksiSukses(
-                              nomorunik: _nomorunik,
-                              namapelanggan: namapembeli,
-                              namabarang: _selectedProduct!,
-                              hargasatuan: _hargaProduk,
-                              qty: qty,
-                              totalbelanja: totalbelanja,
-                              uangbayar: uangbayar,
-                              uangkembali: uangkembali,
-                              created_at: created_at,
-                            ));
-
-                        Get.snackbar(
-                          'Success', 'Transaksi added successfully',
-                          icon: Icon(
-                            Icons.check_circle,
-                            color: Colors
-                                .green, // Change the color to green or any other color
-                          ),
-                          snackPosition: SnackPosition.TOP,
-                          margin: EdgeInsets.only(bottom: 75.0),
-                          backgroundColor: warna.putih,
-                          colorText: Colors.black,
-                          titleText:
-                              SizedBox.shrink(), // Menyembunyikan teks judul
-                          snackStyle: SnackStyle.FLOATING,
-                        );
-
-                        bool success = await _transaksiController
-                            .addTransaksi(newTransaksi);
-
-                        if (success) {
-                          _namaPelangganController.clear();
-                          _qtyController.clear();
-                          _uangBayarController.clear();
-                          _hargaProdukController.clear();
-                          _totalBelanja = 0;
-                          setState(() {
-                            _selectedProduct = null;
-                          });
-                        } else {
-                          print('Failed to add transaction to the database');
-                        }
-                      } else {
-                        Get.snackbar(
-                          'Failed',
-                          'Silakan periksa kembali transaksi.',
-                          icon: Icon(
-                            Icons.cancel,
-                            color: Colors
-                                .red, // Change the color to green or any other color
-                          ),
-                          snackPosition: SnackPosition.TOP,
-                          margin: EdgeInsets.only(bottom: 75.0),
-                          backgroundColor: warna.putih,
-                          colorText: Colors.black,
-                          titleText:
-                              SizedBox.shrink(), // Menyembunyikan teks judul
-                          snackStyle: SnackStyle.FLOATING,
-                        );
-                      }
+                      await _submitTransaksi();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          warna.ungu, // Set background color to orange
+                      backgroundColor: warna.ungu,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25.0),
-                        // Set border radius to 25%
                       ),
-                      minimumSize:
-                          Size(double.infinity, 50.0), // Set the height to 50.0
+                      minimumSize: Size(double.infinity, 50.0),
                     ),
                     child: Text(
                       "Submit",
                       style: TextStyle(
-                        color: Colors.white, // Set text color to white
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -409,8 +498,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
 
   Future<void> _addLog(String activity) async {
     try {
-      await logController
-          .addLog(activity); // Menambahkan log saat tombol ditekan
+      await logController.addLog(activity);
       print('Log added successfully!');
     } catch (e) {
       print('Failed to add log: $e');

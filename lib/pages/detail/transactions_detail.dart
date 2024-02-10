@@ -1,12 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cucimobil_app/controller/logController.dart';
 import 'package:cucimobil_app/controller/transactionController.dart';
+import 'package:cucimobil_app/model/Transactions.dart';
+import 'package:cucimobil_app/model/TransactionsItem.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class TransaksiDetail extends StatefulWidget {
+  final int nomorUnik;
+
+  TransaksiDetail({required this.nomorUnik});
+
   @override
   State<TransaksiDetail> createState() => _TransaksiDetailState();
 }
@@ -15,27 +21,54 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
   final currencyFormatter =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
   String? _selectedProduct;
+  int _qty = 0;
   List<String> produkList = [];
-  double hargaproduk = 0.0;
-  double totalbelanja = 0.0;
+  double _hargaProduk = 0.0;
+  double _totalBelanja = 0.0;
 
   final TextEditingController _namaPelangganController =
       TextEditingController();
   final TextEditingController _qtyController = TextEditingController();
   final TextEditingController _uangBayarController = TextEditingController();
   final TextEditingController _hargaProdukController = TextEditingController();
+  final TextEditingController _totalBelanjaController = TextEditingController();
   final LogController logController = LogController();
+  final TransaksiController _transaksiController =
+      Get.find<TransaksiController>();
+  List<TransactionItem> selectedProducts = [];
 
   @override
   void initState() {
     super.initState();
     fetchProducts();
-    final Map<String, dynamic>? args = Get.arguments;
-    _selectedProduct = args?['namaproduk'] ?? null;
-    if (_selectedProduct != null) {
-      fetchBookPrice(_selectedProduct);
-      calculateTotalBelanja(); // Panggil calculateTotalBelanja di initState
+    fetchData();
+  }
+
+  void fetchData() async {
+    try {
+      TransactionsM transactions =
+          await _transaksiController.getTransaksiByUnik(widget.nomorUnik);
+      setState(() {
+        _namaPelangganController.text = transactions.namapelanggan;
+        _uangBayarController.text = transactions.uangbayar.toStringAsFixed(0);
+        _totalBelanjaController.text =
+            currencyFormatter.format(transactions.totalbelanja);
+        selectedProducts = transactions.items;
+      });
+    } catch (e) {
+      print('Error fetching data for update: $e');
     }
+  }
+
+  Future<void> fetchProducts() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('products').get();
+
+    setState(() {
+      produkList = querySnapshot.docs
+          .map((doc) => doc['namaproduk'].toString())
+          .toList();
+    });
   }
 
   Future<void> fetchBookPrice(String? selectedBook) async {
@@ -49,123 +82,31 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
         double hargaProduk = querySnapshot.docs.first['hargaproduk'];
 
         setState(() {
-          hargaproduk =
-              hargaProduk; // Perbaiki inisialisasi hargaproduk di sini
+          hargaProduk = hargaProduk;
           _hargaProdukController.text = currencyFormatter.format(hargaProduk);
-          calculateTotalBelanja(); // Hitung total belanja setelah hargaproduk berubah
         });
       }
     } else {
       setState(() {
-        hargaproduk = 0.0;
+        _hargaProduk = 0.0;
         _hargaProdukController.text = '';
-        calculateTotalBelanja(); // Hitung total belanja saat produk dihapus
       });
     }
   }
 
-  void calculateTotalBelanja() {
-    int qty = int.tryParse(_qtyController.text) ?? 0;
-    setState(() {
-      totalbelanja = hargaproduk * qty;
-    });
-  }
-
-  final TransaksiController _transaksiController =
-      Get.put(TransaksiController());
-
-  Future<void> updateTransaction() async {
-    String id = Get.arguments['id'];
-    String namapelanggan = _namaPelangganController.text.trim();
-    int qty = int.tryParse(_qtyController.text.trim()) ?? 0;
-    double uangbayar = double.tryParse(
-            _uangBayarController.text.replaceAll(RegExp('[^0-9]'), '')) ??
-        0;
-    double totalbelanja = hargaproduk * qty;
-    double uangkembali = uangbayar - totalbelanja;
-    String updated_at = DateTime.now().toString();
-
-    if (_selectedProduct != null &&
-        qty > 0 &&
-        uangbayar > 0 &&
-        namapelanggan.isNotEmpty &&
-        uangbayar >= totalbelanja) {
-      await _transaksiController.updateTransaksi(
-          id,
-          namapelanggan,
-          _selectedProduct!,
-          hargaproduk,
-          qty,
-          uangbayar,
-          totalbelanja,
-          uangkembali,
-          updated_at);
-
-      _namaPelangganController.clear();
-      _qtyController.clear();
-      _uangBayarController.clear();
-      _hargaProdukController.clear();
+  void _updateQty(int index, int newQty) {
+    if (newQty > 0) {
       setState(() {
-        _selectedProduct = null;
+        selectedProducts[index].qty = newQty;
+        selectedProducts[index].totalBelanja =
+            selectedProducts[index].hargaProduk * newQty;
+        calculateTotalBelanja();
       });
-
-      Get.back();
-      Get.snackbar(
-        'Success',
-        'Transaksi updated successfully!',
-        icon: Icon(
-          Icons.check_circle,
-          color: Colors.green, // Change the color to green or any other color
-        ),
-        snackPosition: SnackPosition.TOP,
-        margin: EdgeInsets.only(bottom: 75.0),
-        backgroundColor: warna.putih,
-        colorText: Colors.black,
-        titleText: SizedBox.shrink(), // Menyembunyikan teks judul
-        snackStyle: SnackStyle.FLOATING,
-      );
-    } else {
-      Get.snackbar(
-        'Failed',
-        'Failed update transaksi gagal!',
-        icon: Icon(
-          Icons.cancel,
-          color: Colors.red, // Change the color to green or any other color
-        ),
-        snackPosition: SnackPosition.TOP,
-        margin: EdgeInsets.only(bottom: 75.0),
-        backgroundColor: warna.putih,
-        colorText: Colors.black,
-        titleText: SizedBox.shrink(), // Menyembunyikan teks judul
-        snackStyle: SnackStyle.FLOATING,
-      );
     }
-  }
-
-  Future<void> fetchProducts() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('products').get();
-
-    setState(() {
-      produkList = querySnapshot.docs
-          .map((doc) => doc['namaproduk'])
-          .toList()
-          .cast<String>();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic>? args = Get.arguments;
-    final String id = args?['id'] ?? '';
-    final String namapelanggan = args?['namapelanggan'] ?? '';
-    final double uangbayar = args?['uangbayar'] ?? 0.0;
-    final int qty = args?['qty'] ?? 0;
-
-    _namaPelangganController.text = namapelanggan;
-    _qtyController.text = qty.toString();
-    _uangBayarController.text = uangbayar.toStringAsFixed(0);
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -194,15 +135,7 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
               controller: _namaPelangganController,
               decoration: InputDecoration(
                 hintText: 'Exm. Egi Renaldi',
-                label: Text(
-                  'Nama Pembeli',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
+                labelText: 'Nama Pembeli',
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -221,24 +154,22 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
               padding: EdgeInsets.all(10),
               height: 50,
               child: DropdownButton<String>(
-                hint: Text('Pilih Paket'),
+                hint: Text('Pilih Produk'),
                 value: _selectedProduct,
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedProduct = newValue;
                     fetchBookPrice(newValue);
+                    _selectedProductChanged(_selectedProduct, _qty);
                   });
                 },
-                dropdownColor: Colors
-                    .white, // Atur warna dropdown sesuai dengan latar belakang Container
-                items: produkList.map<DropdownMenuItem<String>>(
-                  (String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  },
-                ).toList(),
+                items:
+                    produkList.map<DropdownMenuItem<String>>((String product) {
+                  return DropdownMenuItem<String>(
+                    value: product,
+                    child: Text(product),
+                  );
+                }).toList(),
               ),
             ),
             SizedBox(height: 20),
@@ -247,15 +178,7 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
               enabled: false,
               decoration: InputDecoration(
                 hintText: 'Exm. Rp. 100.000',
-                label: Text(
-                  'Harga Paket',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
+                labelText: 'Harga Paket',
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -268,20 +191,15 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
             TextField(
               controller: _qtyController,
               keyboardType: TextInputType.number,
-              onChanged: (value) {
-                calculateTotalBelanja(); // Panggil calculateTotalBelanja ketika _qtyController berubah
+              onChanged: (String newValue) {
+                setState(() {
+                  _qty = int.tryParse(newValue) ?? 0;
+                  _selectedProductChanged(_selectedProduct, _qty);
+                });
               },
               decoration: InputDecoration(
                 hintText: 'Exm. 50',
-                label: Text(
-                  'QTY',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
+                labelText: 'QTY',
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -290,21 +208,126 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
                 ),
               ),
             ),
+            selectedProducts.isNotEmpty
+                ? Container(
+                    margin: EdgeInsets.only(top: 20),
+                    height: 200,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: selectedProducts.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          TransactionItem product = entry.value;
+
+                          return Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            margin: EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 200,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        '${product.namaProduk}',
+                                        style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          // Tombol Remove
+                                          IconButton(
+                                            onPressed: () {
+                                              _updateQty(
+                                                  index, product.qty - 1);
+                                            },
+                                            icon: Icon(
+                                              Icons.remove,
+                                              color: Colors.white,
+                                            ),
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      warna.ungu),
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0), // Ubah angka sesuai dengan radius yang diinginkan
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Text('${product.qty}',
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold)),
+                                          IconButton(
+                                            onPressed: () {
+                                              _updateQty(
+                                                  index, product.qty + 1);
+                                            },
+                                            icon: Icon(
+                                              Icons.add,
+                                              color: Colors.white,
+                                            ),
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      warna.ungu),
+                                              shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                                RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0), // Ubah angka sesuai dengan radius yang diinginkan
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedProducts.removeAt(index);
+                                      calculateTotalBelanja();
+                                    });
+                                  },
+                                  icon: Icon(Icons.delete),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  )
+                : Container(),
             SizedBox(height: 20),
             TextField(
               controller: _uangBayarController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 hintText: 'Exm. Rp. 100.000',
-                label: Text(
-                  'Uang Bayar',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
+                labelText: 'Uang Bayar',
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -323,15 +346,13 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
                     "Total Belanja",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins',
                       fontSize: 16,
                     ),
                   ),
                   Text(
-                    "${currencyFormatter.format(totalbelanja)}",
+                    "${_totalBelanjaController.text}",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins',
                       fontSize: 16,
                     ),
                   ),
@@ -343,21 +364,59 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  updateTransaction();
+                  String namapelanggan = _namaPelangganController.text.trim();
+                  double uangbayar = double.tryParse(_uangBayarController.text
+                          .replaceAll(RegExp('[^0-9]'), '')) ??
+                      0;
+                  double totalBelanja = _totalBelanja;
+                  String updatedat = DateTime.now().toString();
+                  double uangKembali = uangbayar - totalBelanja;
+
+                  if (selectedProducts.isNotEmpty &&
+                      uangbayar > 0 &&
+                      namapelanggan.isNotEmpty &&
+                      uangbayar >= _totalBelanja) {
+                    List<TransactionItem> items =
+                        selectedProducts.map((product) {
+                      return TransactionItem(
+                        productId: product.productId,
+                        namaProduk: product.namaProduk,
+                        hargaProduk: product.hargaProduk,
+                        qty: product.qty,
+                        totalBelanja: product.totalBelanja,
+                      );
+                    }).toList();
+
+                    await _transaksiController.updateTransaksi(
+                      widget.nomorUnik,
+                      namapelanggan,
+                      items,
+                      uangbayar,
+                      totalBelanja,
+                      uangKembali,
+                      updatedat,
+                    );
+
+                    _addLog("Transaksi updated");
+                    _showSuccessDialog();
+                    Get.back();
+                    Get.snackbar(
+                        'Success', 'Transaction updated successfully!');
+                  } else {
+                    Get.snackbar('Failed', 'Failed to update transaction');
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: warna.ungu, // Set background color to orange
+                  backgroundColor: warna.ungu,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
-                    // Set border radius to 25%
                   ),
-                  minimumSize:
-                      Size(double.infinity, 50.0), // Set the height to 50.0
+                  minimumSize: Size(double.infinity, 50.0),
                 ),
                 child: Text(
                   "Submit",
                   style: TextStyle(
-                    color: Colors.white, // Set text color to white
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -367,66 +426,33 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  bool success = await _transaksiController.deleteTransaksi(
-                    context, // Meneruskan BuildContext ke fungsi deleteProducts
-                    id,
-                  );
+                  bool success = await _transaksiController
+                      .deleteTransaksi(widget.nomorUnik);
                   if (success) {
-                    _transaksiController.shouldUpdate.value = true;
-
                     Get.back();
+                    _showSuccessDialog();
                     Get.snackbar(
-                      'Success',
-                      'Transaction Delete successfully!',
-                      icon: Icon(
-                        Icons.check_circle,
-                        color: Colors
-                            .green, // Change the color to green or any other color
-                      ),
-                      snackPosition: SnackPosition.TOP,
-                      margin: EdgeInsets.only(bottom: 75.0),
-                      backgroundColor: warna.putih,
-                      colorText: Colors.black,
-                      titleText: SizedBox.shrink(), // Menyembunyikan teks judul
-                      snackStyle: SnackStyle.FLOATING,
-                    );
-                    _addLog("Deleted transaction : $namapelanggan");
+                        'Success', 'Transaction deleted successfully!');
+                    _addLog("Deleted transaction with ID: ${widget.nomorUnik}");
                   } else {
-                    Get.snackbar(
-                      'Failed',
-                      'Failed to delete transaction',
-                      icon: Icon(
-                        Icons.cancel,
-                        color: Colors
-                            .red, // Change the color to green or any other color
-                      ),
-                      snackPosition: SnackPosition.TOP,
-                      margin: EdgeInsets.only(bottom: 75.0),
-                      backgroundColor: warna.putih,
-                      colorText: Colors.black,
-                      titleText: SizedBox.shrink(), // Menyembunyikan teks judul
-                      snackStyle: SnackStyle.FLOATING,
-                    );
+                    Get.snackbar('Failed', 'Failed to delete transaction');
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(
-                      255, 255, 255, 255), // Set background color to orange
+                  backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
                     side: BorderSide(
-                      color: warna.ungu, // Set border color
-                      width: 2.0, // Set border width
+                      color: warna.ungu,
+                      width: 2.0,
                     ),
-                    // Set border radius to 25%
                   ),
-                  minimumSize:
-                      Size(double.infinity, 50.0), // Set the height to 50.0
+                  minimumSize: Size(double.infinity, 50.0),
                 ),
                 child: Text(
                   "Delete",
                   style: TextStyle(
-                    color: warna.ungu, // Set text color to white
+                    color: warna.ungu,
                   ),
                 ),
               ),
@@ -437,12 +463,63 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
     );
   }
 
-  void updateTotalBelanja() {
-    int qty = int.tryParse(_qtyController.text) ?? 0;
-    totalbelanja = hargaproduk * qty;
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Success"),
+          content: Text("Transaction updated successfully!"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void calculateTotalBelanja() {
+    double totalBelanja = selectedProducts.fold(
+        0.0, (sum, product) => sum + product.totalBelanja);
     setState(() {
-      totalbelanja = totalbelanja;
+      _totalBelanja = totalBelanja;
+      _totalBelanjaController.text = currencyFormatter.format(totalBelanja);
     });
+  }
+
+  void _selectedProductChanged(String? selectedProduct, int qty) {
+    setState(() {
+      _selectedProduct = selectedProduct;
+      addSelectedProductToContainer(qty);
+    });
+  }
+
+  void addSelectedProductToContainer(int qty) {
+    if (_selectedProduct != null && qty > 0) {
+      double totalBelanja = _hargaProduk * qty;
+
+      TransactionItem newProduct = TransactionItem(
+        productId: _selectedProduct!,
+        namaProduk: _selectedProduct!,
+        hargaProduk: _hargaProduk,
+        qty: qty,
+        totalBelanja: totalBelanja,
+      );
+
+      setState(() {
+        selectedProducts.add(newProduct);
+        calculateTotalBelanja();
+        _selectedProduct = null;
+        _qtyController.clear();
+        _hargaProdukController.clear();
+        _qty = 0;
+      });
+    }
   }
 
   Future<void> _addLog(String activity) async {
