@@ -85,7 +85,7 @@ class TransaksiController extends GetxController {
   Future<int> countTransactions() async {
     try {
       QuerySnapshot querySnapshot =
-          await _firestore.collection('products').get();
+          await _firestore.collection('transactions').get();
       return querySnapshot.size;
     } catch (e) {
       print('Error counting books: $e');

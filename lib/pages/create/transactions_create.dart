@@ -38,159 +38,10 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
 
   List<Map<String, dynamic>> selectedProducts = [];
 
-  void calculateTotalBelanja() {
-    int qty = int.tryParse(_qtyController.text) ?? 0;
-
-    if (_hargaProduk != null && _selectedProduct != null && qty > 0) {
-      int existingProductIndex = selectedProducts
-          .indexWhere((product) => product['product'] == _selectedProduct);
-
-      if (existingProductIndex != -1) {
-        setState(() {
-          selectedProducts[existingProductIndex]['qty'] += qty;
-          selectedProducts[existingProductIndex]['total'] += _hargaProduk * qty;
-          _totalBelanja = selectedProducts.fold(
-              0.0, (sum, product) => sum + product['total']);
-        });
-      } else {
-        double totalBelanja = _hargaProduk * qty;
-        Map<String, dynamic> selectedProductData = {
-          'id': _selectedProductId!,
-          'product': _selectedProduct!,
-          'qty': qty,
-          'total': totalBelanja,
-        };
-
-        setState(() {
-          selectedProducts.add(selectedProductData);
-          _totalBelanja = selectedProducts.fold(
-              0.0, (sum, product) => sum + product['total']);
-        });
-      }
-      setState(() {
-        _selectedProduct = null;
-        _hargaProdukController.clear();
-        _qtyController.clear();
-      });
-    } else {
-      print('Harga produk tidak ditemukan atau qty tidak valid.');
-    }
-  }
-
-  Future<void> _submitTransaksi() async {
-    String namapelanggan = _namaPelangganController.text.trim();
-    double uangbayar = double.tryParse(
-            _uangBayarController.text.replaceAll(RegExp('[^0-9]'), '')) ??
-        0;
-
-    if (selectedProducts.isNotEmpty &&
-        uangbayar > 0 &&
-        namapelanggan.isNotEmpty &&
-        uangbayar >= _totalBelanja) {
-      double totalbelanja = _totalBelanja;
-      double uangkembali = uangbayar - totalbelanja;
-
-      int _nomor_unik = Random().nextInt(1000000000);
-      String _created_at = DateTime.now().toString();
-      String _updated_at = DateTime.now().toString();
-
-      List<TransactionItem> transactionItems = selectedProducts.map((product) {
-        return TransactionItem(
-          productId: product['id'],
-          namaProduk: product['product'],
-          hargaProduk: _hargaProduk,
-          qty: product['qty'],
-          totalBelanja: product['total'],
-        );
-      }).toList();
-
-      TransactionsM newTransaksi = TransactionsM(
-        nomorunik: _nomor_unik,
-        namapelanggan: namapelanggan,
-        items: transactionItems,
-        uangbayar: uangbayar,
-        totalbelanja: totalbelanja,
-        uangkembali: uangkembali,
-        created_at: _created_at,
-        updated_at: _updated_at,
-      );
-
-      bool success = await _transaksiController.addTransaksi(newTransaksi);
-
-      if (success) {
-        Get.snackbar('Success', 'Transaksi added successfully');
-
-        String newtransactionId = _nomor_unik.toString();
-
-        _namaPelangganController.clear();
-        _uangBayarController.clear();
-        _hargaProdukController.clear();
-        _totalBelanja = 0;
-        setState(() {
-          _selectedProduct = null;
-          selectedProducts.clear();
-          Get.to(() => TransaksiSukses(transactionId: newtransactionId));
-        });
-      } else {
-        Get.snackbar('Failed', 'Failed to add transaction to the database');
-      }
-    } else {
-      Get.snackbar('Failed', 'Please check your transaction details.');
-    }
-  }
-
-  void fetchPrice(String? selectedBook) async {
-    if (selectedBook != null) {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('products')
-          .where('namaproduk', isEqualTo: selectedBook)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        double hargaproduk = querySnapshot.docs.first['hargaproduk'];
-        String productId = querySnapshot.docs.first.id;
-
-        setState(() {
-          _hargaProduk = hargaproduk;
-          _selectedProductId = productId; // Set selected product ID
-          _hargaProdukController.text =
-              "Rp. ${_hargaProduk.toStringAsFixed(2)}";
-        });
-      }
-    } else {
-      setState(() {
-        _hargaProduk = 0.0;
-        _hargaProdukController.text = '';
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     fetchProducts();
-  }
-
-  Future<void> fetchProducts() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('products').get();
-
-    setState(() {
-      produkList = querySnapshot.docs
-          .map((doc) => doc['namaproduk'].toString())
-          .toList();
-    });
-  }
-
-  void _updateQty(int index, int newQty) {
-    if (newQty > 0) {
-      setState(() {
-        selectedProducts[index]['qty'] = newQty;
-        selectedProducts[index]['total'] = _hargaProduk * newQty;
-        _totalBelanja = selectedProducts.fold(
-            0.0, (sum, product) => sum + product['total']);
-      });
-    }
   }
 
   @override
@@ -484,6 +335,155 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
         ],
       ),
     );
+  }
+
+  Future<void> fetchProducts() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('products').get();
+
+    setState(() {
+      produkList = querySnapshot.docs
+          .map((doc) => doc['namaproduk'].toString())
+          .toList();
+    });
+  }
+
+  void _updateQty(int index, int newQty) {
+    if (newQty > 0) {
+      setState(() {
+        selectedProducts[index]['qty'] = newQty;
+        selectedProducts[index]['total'] = _hargaProduk * newQty;
+        _totalBelanja = selectedProducts.fold(
+            0.0, (sum, product) => sum + product['total']);
+      });
+    }
+  }
+
+  void calculateTotalBelanja() {
+    int qty = int.tryParse(_qtyController.text) ?? 0;
+
+    if (_hargaProduk != null && _selectedProduct != null && qty > 0) {
+      int existingProductIndex = selectedProducts
+          .indexWhere((product) => product['product'] == _selectedProduct);
+
+      if (existingProductIndex != -1) {
+        setState(() {
+          selectedProducts[existingProductIndex]['qty'] += qty;
+          selectedProducts[existingProductIndex]['total'] += _hargaProduk * qty;
+          _totalBelanja = selectedProducts.fold(
+              0.0, (sum, product) => sum + product['total']);
+        });
+      } else {
+        double totalBelanja = _hargaProduk * qty;
+        Map<String, dynamic> selectedProductData = {
+          'id': _selectedProductId!,
+          'product': _selectedProduct!,
+          'qty': qty,
+          'total': totalBelanja,
+        };
+
+        setState(() {
+          selectedProducts.add(selectedProductData);
+          _totalBelanja = selectedProducts.fold(
+              0.0, (sum, product) => sum + product['total']);
+        });
+      }
+      setState(() {
+        _selectedProduct = null;
+        _hargaProdukController.clear();
+        _qtyController.clear();
+      });
+    } else {
+      print('Harga produk tidak ditemukan atau qty tidak valid.');
+    }
+  }
+
+  Future<void> _submitTransaksi() async {
+    String namapelanggan = _namaPelangganController.text.trim();
+    double uangbayar = double.tryParse(
+            _uangBayarController.text.replaceAll(RegExp('[^0-9]'), '')) ??
+        0;
+
+    if (selectedProducts.isNotEmpty &&
+        uangbayar > 0 &&
+        namapelanggan.isNotEmpty &&
+        uangbayar >= _totalBelanja) {
+      double totalbelanja = _totalBelanja;
+      double uangkembali = uangbayar - totalbelanja;
+
+      int _nomor_unik = Random().nextInt(1000000000);
+      String _created_at = DateTime.now().toString();
+      String _updated_at = DateTime.now().toString();
+
+      List<TransactionItem> transactionItems = selectedProducts.map((product) {
+        return TransactionItem(
+          productId: product['id'],
+          namaProduk: product['product'],
+          hargaProduk: _hargaProduk,
+          qty: product['qty'],
+          totalBelanja: product['total'],
+        );
+      }).toList();
+
+      TransactionsM newTransaksi = TransactionsM(
+        nomorunik: _nomor_unik,
+        namapelanggan: namapelanggan,
+        items: transactionItems,
+        uangbayar: uangbayar,
+        totalbelanja: totalbelanja,
+        uangkembali: uangkembali,
+        created_at: _created_at,
+        updated_at: _updated_at,
+      );
+
+      bool success = await _transaksiController.addTransaksi(newTransaksi);
+
+      if (success) {
+        Get.snackbar('Success', 'Transaksi added successfully');
+
+        String newtransactionId = _nomor_unik.toString();
+
+        _namaPelangganController.clear();
+        _uangBayarController.clear();
+        _hargaProdukController.clear();
+        _totalBelanja = 0;
+        setState(() {
+          _selectedProduct = null;
+          selectedProducts.clear();
+          Get.to(() => TransaksiSukses(transactionId: newtransactionId));
+        });
+      } else {
+        Get.snackbar('Failed', 'Failed to add transaction to the database');
+      }
+    } else {
+      Get.snackbar('Failed', 'Please check your transaction details.');
+    }
+  }
+
+  void fetchPrice(String? selectedBook) async {
+    if (selectedBook != null) {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('products')
+          .where('namaproduk', isEqualTo: selectedBook)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        double hargaproduk = querySnapshot.docs.first['hargaproduk'];
+        String productId = querySnapshot.docs.first.id;
+
+        setState(() {
+          _hargaProduk = hargaproduk;
+          _selectedProductId = productId; // Set selected product ID
+          _hargaProdukController.text =
+              "Rp. ${_hargaProduk.toStringAsFixed(2)}";
+        });
+      }
+    } else {
+      setState(() {
+        _hargaProduk = 0.0;
+        _hargaProdukController.text = '';
+      });
+    }
   }
 
   void updateTotalBelanja() {

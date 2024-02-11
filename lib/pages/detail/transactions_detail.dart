@@ -44,67 +44,6 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
     fetchData();
   }
 
-  void fetchData() async {
-    try {
-      TransactionsM transactions =
-          await _transaksiController.getTransaksiByUnik(widget.nomorUnik);
-      setState(() {
-        _namaPelangganController.text = transactions.namapelanggan;
-        _uangBayarController.text = transactions.uangbayar.toStringAsFixed(0);
-        _totalBelanjaController.text =
-            currencyFormatter.format(transactions.totalbelanja);
-        selectedProducts = transactions.items;
-      });
-    } catch (e) {
-      print('Error fetching data for update: $e');
-    }
-  }
-
-  Future<void> fetchProducts() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('products').get();
-
-    setState(() {
-      produkList = querySnapshot.docs
-          .map((doc) => doc['namaproduk'].toString())
-          .toList();
-    });
-  }
-
-  Future<void> fetchBookPrice(String? selectedBook) async {
-    if (selectedBook != null) {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('products')
-          .where('namaproduk', isEqualTo: selectedBook)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        double hargaProduk = querySnapshot.docs.first['hargaproduk'];
-
-        setState(() {
-          hargaProduk = hargaProduk;
-          _hargaProdukController.text = currencyFormatter.format(hargaProduk);
-        });
-      }
-    } else {
-      setState(() {
-        _hargaProduk = 0.0;
-        _hargaProdukController.text = '';
-      });
-    }
-  }
-
-  void _updateQty(int index, int newQty) {
-    if (newQty > 0) {
-      setState(() {
-        selectedProducts[index].qty = newQty;
-        selectedProducts[index].totalBelanja =
-            selectedProducts[index].hargaProduk * newQty;
-        calculateTotalBelanja();
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -463,6 +402,71 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
     );
   }
 
+  void fetchData() async {
+    try {
+      TransactionsM transactions =
+          await _transaksiController.getTransaksiByUnik(widget.nomorUnik);
+      setState(() {
+        _namaPelangganController.text = transactions.namapelanggan;
+        _uangBayarController.text = transactions.uangbayar.toStringAsFixed(0);
+        _totalBelanjaController.text =
+            currencyFormatter.format(transactions.totalbelanja);
+        selectedProducts = transactions.items;
+      });
+    } catch (e) {
+      print('Error fetching data for update: $e');
+    }
+  }
+
+  Future<void> fetchProducts() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('products').get();
+
+    setState(() {
+      produkList = querySnapshot.docs
+          .map((doc) => doc['namaproduk'].toString())
+          .toList();
+    });
+  }
+
+  Future<void> fetchBookPrice(String? selectedBook) async {
+    if (selectedBook != null) {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('products')
+          .where('namaproduk', isEqualTo: selectedBook)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        double hargaProduk = querySnapshot.docs.first['hargaproduk'];
+
+        setState(() {
+          _hargaProduk = hargaProduk; // Perbarui harga produk
+          _hargaProdukController.text = currencyFormatter.format(hargaProduk);
+          addSelectedProductToContainer(
+              _qty); // Tambahkan produk baru setelah harga produk diperbarui
+        });
+      }
+    } else {
+      setState(() {
+        _hargaProduk = 0.0;
+        _hargaProdukController.text = '';
+      });
+    }
+  }
+
+  void _updateQty(int index, int newQty) {
+    if (newQty > 0) {
+      setState(() {
+        selectedProducts[index].qty = newQty;
+        selectedProducts[index].totalBelanja =
+            selectedProducts[index].hargaProduk * newQty;
+      });
+      addSelectedProductToContainer(
+          newQty); // Tambahkan produk baru setelah qty diperbarui
+      calculateTotalBelanja();
+    }
+  }
+
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -513,7 +517,7 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
 
       setState(() {
         selectedProducts.add(newProduct);
-        calculateTotalBelanja();
+        calculateTotalBelanja(); // Panggil calculateTotalBelanja() setelah menambahkan produk
         _selectedProduct = null;
         _qtyController.clear();
         _hargaProdukController.clear();

@@ -3,8 +3,8 @@ import 'package:cucimobil_app/controller/AuthController.dart';
 import 'package:cucimobil_app/model/Transactions.dart';
 import 'package:cucimobil_app/pages/create/transactions_create.dart';
 import 'package:cucimobil_app/pages/detail/transactions_detail.dart';
-import 'package:cucimobil_app/pages/invoice/transaksi_all.dart';
 import 'package:cucimobil_app/pages/invoice/transaksi_invoice.dart';
+import 'package:cucimobil_app/pages/invoice/transaksi_all.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -166,9 +166,14 @@ class _TransactionsState extends State<Transactions> {
                                   await printPdfByDate(
                                       selectedDate!, filteredTransaksi);
                                 } else {
-                                  // Handle jika tanggal belum dipilih
-                                  print(
-                                      'Please select a date before generating PDF.');
+                                  // Tampilkan pesan jika tanggal belum dipilih
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Please select a date before generating PDF.'),
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
                                 }
                               },
                               child: Text(

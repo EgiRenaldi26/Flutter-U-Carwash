@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:cucimobil_app/model/TransactionsItem.dart'; // Sesuaikan dengan path yang benar
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,9 +15,7 @@ class EmsPdfService {
   Future<Uint8List> generateEMSPDF(
     int nomorunik,
     String namapelanggan,
-    String namaproduk,
-    double hargaproduk,
-    int qty,
+    List<TransactionItem> items,
     double totalbelanja,
     double uangbayar,
     double uangkembali,
@@ -29,18 +28,26 @@ class EmsPdfService {
         pageFormat: PdfPageFormat.a4,
         build: (pw.Context context) {
           return pw.Column(
-            mainAxisAlignment: pw.MainAxisAlignment.center,
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
               pw.Container(
                 alignment: pw.Alignment.topCenter,
-                child: pw.Center(
-                  child: pw.Text(
-                    "CUCI MOBIL",
-                    style: pw.TextStyle(
-                      fontWeight: pw.FontWeight.bold,
-                      fontSize: 26,
-                    ),
+                child: pw.Text(
+                  "U - CARWASH",
+                  style: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Container(
+                alignment: pw.Alignment.center,
+                child: pw.Text(
+                  "Jl. Arief Rahman Hakim No.35, Cigadung, Kec. Subang, Kabupaten Subang, Jawa Barat 41213",
+                  style: pw.TextStyle(
+                    fontWeight: pw.FontWeight.normal,
+                    fontSize: 8,
+                    font: pw.Font.courier(),
                   ),
                 ),
               ),
@@ -69,10 +76,6 @@ class EmsPdfService {
                   ],
                 ),
               ),
-              pw.Divider(thickness: 2),
-              pw.SizedBox(
-                height: 20,
-              ),
               pw.Container(
                 margin: pw.EdgeInsets.symmetric(vertical: 5),
                 child: pw.Row(
@@ -95,72 +98,43 @@ class EmsPdfService {
                   ],
                 ),
               ),
-              pw.Container(
-                margin: pw.EdgeInsets.symmetric(vertical: 5),
-                child: pw.Row(
+              pw.Divider(thickness: 2),
+              pw.SizedBox(height: 10),
+              for (var item in items)
+                pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    pw.Text(
-                      "Nama Produk : ",
-                      style: pw.TextStyle(
-                        fontSize: 14,
-                        font: pw.Font.courier(),
-                      ),
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(
+                          "${item.namaProduk}",
+                          style: pw.TextStyle(
+                            fontSize: 13,
+                            fontWeight: pw.FontWeight.bold,
+                            font: pw.Font.courier(),
+                          ),
+                        ),
+                        pw.Text(
+                          "Harga : ${currencyFormatter.format(item.totalBelanja)}",
+                          style: pw.TextStyle(
+                            fontSize: 10,
+                            fontWeight: pw.FontWeight.bold,
+                            font: pw.Font.courier(),
+                          ),
+                        ),
+                      ],
                     ),
                     pw.Text(
-                      "$namaproduk",
+                      "x ${item.qty}",
                       style: pw.TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
+                        fontWeight: pw.FontWeight.bold,
                         font: pw.Font.courier(),
                       ),
                     ),
                   ],
                 ),
-              ),
-              pw.Container(
-                margin: pw.EdgeInsets.symmetric(vertical: 5),
-                child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text(
-                      "Harga Produk : ",
-                      style: pw.TextStyle(
-                        fontSize: 14,
-                        font: pw.Font.courier(),
-                      ),
-                    ),
-                    pw.Text(
-                      "${currencyFormatter.format(hargaproduk)}",
-                      style: pw.TextStyle(
-                        fontSize: 14,
-                        font: pw.Font.courier(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              pw.Container(
-                margin: pw.EdgeInsets.symmetric(vertical: 5),
-                child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text(
-                      "Quantity : ",
-                      style: pw.TextStyle(
-                        fontSize: 14,
-                        font: pw.Font.courier(),
-                      ),
-                    ),
-                    pw.Text(
-                      "$qty",
-                      style: pw.TextStyle(
-                        fontSize: 14,
-                        font: pw.Font.courier(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               pw.SizedBox(
                 height: 20,
               ),
@@ -210,7 +184,7 @@ class EmsPdfService {
                   mainAxisAlignment: pw.MainAxisAlignment.center,
                   children: [
                     pw.Text(
-                      "-- Terimakasih --",
+                      "-- Terimakasih Atas Kunjungan Anda --",
                       style: pw.TextStyle(
                         fontWeight: pw.FontWeight.bold,
                         fontSize: 16,

@@ -44,15 +44,6 @@ Future<void> printPdfByDate(
               pw.SizedBox(
                 height: 10,
               ),
-              pw.Center(
-                child: pw.Text(
-                  "Jl. Arief Rahman Hakim No.35, Cigadung, Kec. Subang, Kabupaten Subang, Jawa Barat 41213",
-                  style: pw.TextStyle(
-                    fontSize: 8,
-                  ),
-                ),
-              ),
-              pw.SizedBox(height: 20),
               pw.Divider(
                 thickness: 2,
               ),
@@ -86,8 +77,6 @@ Future<void> printPdfByDate(
                   ),
                   headers: [
                     'Nama Pelanggan',
-                    'Nama Produk',
-                    'Quantity',
                     'Total Belanja',
                     'Uang Bayar',
                     'Uang Kembali',
@@ -97,8 +86,6 @@ Future<void> printPdfByDate(
                     transactionsByDate.length,
                     (index) => [
                       transactionsByDate[index]['namapelanggan'],
-                      transactionsByDate[index]['namaproduk'],
-                      transactionsByDate[index]['qty'].toString(),
                       NumberFormat.currency(locale: 'id', symbol: 'Rp')
                           .format(transactionsByDate[index]['totalbelanja']),
                       NumberFormat.currency(locale: 'id', symbol: 'Rp')
