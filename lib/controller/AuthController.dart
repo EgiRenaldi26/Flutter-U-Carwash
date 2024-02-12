@@ -13,7 +13,6 @@ class AuthController extends GetxController {
   Rx<User?> firebaseUser = Rx<User?>(null);
 
   RxString userName = RxString('');
-  
 
   Rx<UserRole> userRole = UserRole.Admin.obs;
 
@@ -111,6 +110,7 @@ class AuthController extends GetxController {
           titleText: SizedBox.shrink(), // Menyembunyikan teks judul
           snackStyle: SnackStyle.FLOATING,
         );
+        // Tampilkan pesan jika tanggal tidak dipilih
       } else {
         Get.snackbar(
           'Login Error',

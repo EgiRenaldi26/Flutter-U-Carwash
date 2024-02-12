@@ -128,3 +128,88 @@ Future<void> printPdfByDate(
     print('No transactions found for the selected date.');
   }
 }
+
+Future<void> printPdfAllTransactions(
+    List<DocumentSnapshot> transactions) async {
+  final pdf = pw.Document();
+
+  if (transactions.isNotEmpty) {
+    // Calculate overall total
+    double overallTotal = calculateOverallTotal(transactions);
+    // Add content to the PDF using pdf package functions
+    pdf.addPage(pw.Page(
+      build: (pw.Context context) {
+        return pw.Center(
+          child: pw.Column(
+            children: [
+              pw.Text('LAPORAN TRANSAKSI', style: pw.TextStyle(fontSize: 16)),
+              pw.SizedBox(
+                height: 10,
+              ),
+              pw.Divider(
+                thickness: 2,
+              ),
+              pw.SizedBox(height: 25),
+              pw.Container(
+                width: double.infinity,
+                child: pw.Table.fromTextArray(
+                  headerStyle: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: 8,
+                  ),
+                  cellStyle: pw.TextStyle(
+                    fontSize: 6, // Adjust the font size for data cells
+                  ),
+                  headers: [
+                    'Nama Pelanggan',
+                    'Total Belanja',
+                    'Uang Bayar',
+                    'Uang Kembali',
+                    'Created At',
+                  ],
+                  data: List<List<String>>.generate(
+                    transactions.length,
+                    (index) => [
+                      transactions[index]['namapelanggan'],
+                      NumberFormat.currency(locale: 'id', symbol: 'Rp')
+                          .format(transactions[index]['totalbelanja']),
+                      NumberFormat.currency(locale: 'id', symbol: 'Rp')
+                          .format(transactions[index]['uangbayar']),
+                      NumberFormat.currency(locale: 'id', symbol: 'Rp')
+                          .format(transactions[index]['uangkembali']),
+                      DateFormat('yyyy-MM-dd').format(
+                          DateTime.parse(transactions[index]['created_at'])),
+                    ],
+                  ),
+                ),
+              ),
+              pw.SizedBox(
+                height: 20,
+              ),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.end,
+                children: [
+                  pw.Text(
+                    "Total Keseluruhan : ${NumberFormat.currency(locale: 'id', symbol: 'Rp').format(overallTotal)}",
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    ));
+
+    // Save the generated PDF to a temporary file
+    final Uint8List pdfBytes = await pdf.save();
+    final tempDir = await getTemporaryDirectory();
+    final tempFile = await File('${tempDir.path}/LAPORAN TRANSAKSI ALL.pdf')
+        .writeAsBytes(pdfBytes);
+
+    // Open the PDF using the open_file package
+    OpenFile.open(tempFile.path);
+  } else {
+    // Show a message if no transactions found
+    print('No transactions found.');
+  }
+}
