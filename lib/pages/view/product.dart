@@ -154,7 +154,8 @@ class _ProductState extends State<Product> {
                                   padding: const EdgeInsets.all(10),
                                   height: 70,
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       SizedBox(width: 10),
                                       Expanded(
@@ -164,13 +165,14 @@ class _ProductState extends State<Product> {
                                           children: [
                                             // Circle with shopping icon
                                             Container(
-                                              margin: EdgeInsets.only(right: 8.0),
+                                              margin:
+                                                  EdgeInsets.only(right: 8.0),
                                               height: 50,
                                               width: 50,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.rectangle,
                                                 color: Color.fromARGB(
-                                                    255, 223, 92, 92),
+                                                    255, 92, 147, 223),
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(10)),
                                               ),
@@ -235,8 +237,8 @@ class _ProductState extends State<Product> {
                                   ),
                                 ),
                                 Text(
-                                  'Actions',
-                                  textAlign: TextAlign.right,
+                                  'View All',
+                                  textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontFamily: 'OpenSans',
                                     fontSize: 20,
@@ -312,7 +314,7 @@ class _ProductState extends State<Product> {
                                                   decoration: BoxDecoration(
                                                     shape: BoxShape.rectangle,
                                                     color: Color.fromARGB(
-                                                        255, 223, 92, 92),
+                                                        255, 92, 147, 223),
                                                     borderRadius:
                                                         BorderRadius.all(
                                                             Radius.circular(
@@ -382,8 +384,8 @@ class _ProductState extends State<Product> {
                                       ),
                                     ),
                                     Text(
-                                      'Actions',
-                                      textAlign: TextAlign.right,
+                                      'View All',
+                                      textAlign: TextAlign.left,
                                       style: TextStyle(
                                         fontFamily: 'OpenSans',
                                         fontSize: 20,

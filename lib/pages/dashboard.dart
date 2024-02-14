@@ -6,6 +6,7 @@ import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -34,7 +35,7 @@ class _DashboardState extends State<Dashboard> {
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.purple.shade50,
+      backgroundColor: warna.background,
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -45,7 +46,7 @@ class _DashboardState extends State<Dashboard> {
             },
           ),
         ),
-        backgroundColor: Colors.purple.shade50,
+        backgroundColor: warna.background,
         title: Center(
           child: Text(
             "Dashboard",
@@ -165,277 +166,341 @@ class _DashboardState extends State<Dashboard> {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Hi, ${_authController.userName}",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontSize: 14,
-              ),
-            ),
-            SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 160,
-                    width: 300,
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: warna.box1,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 10,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Income",
-                                style: TextStyle(
-                                  color: warna.putih,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Row(
-                            children: [
-                              IconTheme(
-                                data: IconThemeData(
-                                  color: Colors.white,
-                                  size: 30.0,
-                                ),
-                                child: Icon(
-                                  Icons.attach_money_sharp,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              FutureBuilder<double>(
-                                future: _transactionController.income(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return CircularProgressIndicator();
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  } else {
-                                    double totalBelanja = snapshot.data ?? 0;
-                                    return Text(
-                                      "${currencyFormatter.format(totalBelanja)}",
-                                      style: TextStyle(
-                                        color: warna.putih,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 17,
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                              SizedBox(
-                                width: 50,
-                              ),
-                              IconTheme(
-                                data: IconThemeData(
-                                  color: Colors.white,
-                                  size: 50.0,
-                                ),
-                                child: Icon(
-                                  Icons.trending_up,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Center(
-                          child: Container(
-                            width: 250.0,
-                            child: Divider(
-                              thickness: 4.0,
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Hi, ${_authController.userName}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 14,
+                  ),
+                ),
+                SizedBox(height: 10),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 160,
+                        width: 300,
+                        margin: EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: warna.box1,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 10,
+                              offset: Offset(0, 1),
                             ),
-                          ),
+                          ],
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Transactions Income",
-                                style: TextStyle(
-                                  color: warna.putih,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Income",
+                                    style: TextStyle(
+                                      color: warna.putih,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  IconTheme(
+                                    data: IconThemeData(
+                                      color: Colors.white,
+                                      size: 30.0,
+                                    ),
+                                    child: Icon(
+                                      Icons.attach_money_sharp,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  FutureBuilder<double>(
+                                    future: _transactionController.income(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else {
+                                        double totalBelanja =
+                                            snapshot.data ?? 0;
+                                        return Text(
+                                          "${currencyFormatter.format(totalBelanja)}",
+                                          style: TextStyle(
+                                            color: warna.putih,
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 17,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  SizedBox(
+                                    width: 50,
+                                  ),
+                                  IconTheme(
+                                    data: IconThemeData(
+                                      color: Colors.white,
+                                      size: 50.0,
+                                    ),
+                                    child: Icon(
+                                      Icons.trending_up,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Center(
+                              child: Container(
+                                width: 250.0,
+                                child: Divider(
+                                  thickness: 4.0,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 30),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Transactions Income",
+                                    style: TextStyle(
+                                      color: warna.putih,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    height: 160,
-                    width: 300,
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          HSLColor.fromAHSL(1.0, 265, 0.32, 0.36).toColor(),
-                          HSLColor.fromAHSL(1.0, 256, 0.73, 0.78).toColor(),
-                        ],
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey,
-                          blurRadius: 10,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Today",
-                                style: TextStyle(
-                                  color: warna.putih,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        height: 160,
+                        width: 300,
+                        margin: EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              HSLColor.fromAHSL(1.0, 265, 0.32, 0.36).toColor(),
+                              HSLColor.fromAHSL(1.0, 256, 0.73, 0.78).toColor(),
                             ],
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Row(
-                            children: [
-                              IconTheme(
-                                data: IconThemeData(
-                                  color: Colors.white,
-                                  size: 30.0,
-                                ),
-                                child: Icon(
-                                  Icons.date_range,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                "${_getFormattedDate()}",
-                                style: TextStyle(
-                                  color: warna.putih,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 17,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 50,
-                              ),
-                              IconTheme(
-                                data: IconThemeData(
-                                  color: Colors.white,
-                                  size: 50.0,
-                                ),
-                                child: Icon(
-                                  Icons.cloud_sync,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Center(
-                          child: Container(
-                            width: 250.0,
-                            child: Divider(
-                              thickness: 4.0,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 10,
+                              offset: Offset(0, 1),
                             ),
-                          ),
+                          ],
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Date Today",
-                                style: TextStyle(
-                                  color: warna.putih,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Today",
+                                    style: TextStyle(
+                                      color: warna.putih,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  IconTheme(
+                                    data: IconThemeData(
+                                      color: Colors.white,
+                                      size: 30.0,
+                                    ),
+                                    child: Icon(
+                                      Icons.date_range,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "${_getFormattedDate()}",
+                                    style: TextStyle(
+                                      color: warna.putih,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 17,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 50,
+                                  ),
+                                  IconTheme(
+                                    data: IconThemeData(
+                                      color: Colors.white,
+                                      size: 50.0,
+                                    ),
+                                    child: Icon(
+                                      Icons.cloud_sync,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Center(
+                              child: Container(
+                                width: 250.0,
+                                child: Divider(
+                                  thickness: 4.0,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 30),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Date Today",
+                                    style: TextStyle(
+                                      color: warna.putih,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Text(
-              "List Menu",
-              style: TextStyle(
-                fontFamily: "Poppins",
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 10),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  "List Menu",
+                  style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 10),
 
-            // Hak Akses Untuk Admin
-            if (currentUserRole == UserRole.Admin) ...[
-              _buildAdminDashboardList(),
-            ],
-            // Hak Akses Untuk Kasir
-            if (currentUserRole == UserRole.Kasir) ...[
-              _buildKasirDashboardList(),
-            ],
-            // Hak Akses Untuk Owner
-            if (currentUserRole == UserRole.Owner) ...[
-              _buildOwnerDashboardList(),
-            ],
-          ],
-        ),
+                // Hak Akses Untuk Admin
+                if (currentUserRole == UserRole.Admin) ...[
+                  _buildAdminDashboardList(),
+                ],
+                // Hak Akses Untuk Kasir
+                if (currentUserRole == UserRole.Kasir) ...[
+                  _buildKasirDashboardList(),
+                ],
+                // Hak Akses Untuk Owner
+                if (currentUserRole == UserRole.Owner) ...[
+                  _buildOwnerDashboardList(),
+                ],
+
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  "Bar Chart",
+                  style: TextStyle(
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: 20,
+                    top: 20,
+                  ),
+                  child: FutureBuilder<double>(
+                    future: _transactionController
+                        .income(), // Menggunakan tanggal saat ini, bisa diganti sesuai kebutuhan
+                    builder: (context, snapshot) {
+                      double totalIncome = snapshot.data ?? 0;
+                      NumberFormat currencyFormatter =
+                          NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+                      String formattedIncome =
+                          currencyFormatter.format(totalIncome);
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else {
+                        return SfCartesianChart(
+                          primaryXAxis: CategoryAxis(),
+                          series: <CartesianSeries>[
+                            BarSeries<dynamic, String>(
+                              dataSource: [
+                                {
+                                  'category': 'Income',
+                                  'value': currencyFormatter.format(totalIncome)
+                                },
+                              ],
+                              xValueMapper: (data, _) => data['category'],
+                              yValueMapper: (data, _) => double.parse(
+                                  data['value']
+                                      .replaceAll(RegExp(r'[^0-9]'), '')),
+                              dataLabelSettings:
+                                  DataLabelSettings(isVisible: true),
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -563,20 +628,11 @@ class DashboardList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
-      margin: EdgeInsets.all(10),
       height: 90,
       width: 340,
       decoration: BoxDecoration(
-        color: warna.putih,
+        color: warna.background,
         borderRadius: BorderRadius.all(Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 1,
-            offset: Offset(0, 1),
-          ),
-        ],
       ),
       child: ListTile(
         title: Text(

@@ -97,7 +97,25 @@ class TransaksiController extends GetxController {
     }
   }
 
-  
+  Future<double> calculateIncome(DateTime date) async {
+    double totalIncome = 0;
+
+    // Mendapatkan data transaksi dari Firestore untuk tanggal tertentu
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('transactions')
+        .where('date', isEqualTo: date)
+        .get();
+
+    // Menghitung total income dari data transaksi
+    for (QueryDocumentSnapshot<Map<String, dynamic>> doc in snapshot.docs) {
+      double income = doc.data()['income'];
+      totalIncome += income;
+    }
+
+    return totalIncome;
+  }
+
   // Calculate Income
   Future<double> income() async {
     try {
