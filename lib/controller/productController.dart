@@ -11,6 +11,7 @@ class ProductController extends GetxController {
 
   get products => null;
 
+  // Create Produk
   Future<bool> addProduct(ProductM products) async {
     try {
       await _firestore.collection('products').add(products.toMap());
@@ -22,6 +23,7 @@ class ProductController extends GetxController {
     }
   }
 
+  // Delete Produk
   Future<bool> deleteProducts(BuildContext context, String id) async {
     try {
       // Tampilkan dialog konfirmasi
@@ -63,6 +65,7 @@ class ProductController extends GetxController {
     }
   }
 
+  // Update Produk
   Future<bool> updateProducts(String id, String namaProduk, double hargaProduk,
       String deskripsi, String updated_at) async {
     try {
@@ -79,6 +82,7 @@ class ProductController extends GetxController {
     }
   }
 
+  // Count Produk yang di dashboard
   Future<int> countProducts() async {
     try {
       QuerySnapshot querySnapshot =

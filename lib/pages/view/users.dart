@@ -171,6 +171,13 @@ class _UserState extends State<User> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 1,
+                              offset: Offset(0, 1),
+                            ),
+                          ],
                         ),
                         padding: const EdgeInsets.all(10),
                         height: 100,
@@ -185,6 +192,8 @@ class _UserState extends State<User> {
                                   // Circle with shopping icon
                                   Container(
                                     margin: EdgeInsets.only(right: 8.0),
+                                    height: 50,
+                                    width: 50,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.rectangle,
                                       color: warna.ungu,

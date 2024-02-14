@@ -11,6 +11,7 @@ class TransaksiController extends GetxController {
   final CollectionReference transaksiCollection =
       FirebaseFirestore.instance.collection('transactions');
 
+  // Create Transaksi
   Future<bool> addTransaksi(TransactionsM transactions) async {
     try {
       await _firestore.collection('transactions').add(transactions.toMap());
@@ -26,6 +27,7 @@ class TransaksiController extends GetxController {
     transaksiList.clear();
   }
 
+  // Hapus Transaksi
   Future<bool> deleteTransaksi(int nomorUnik) async {
     try {
       await _firestore
@@ -46,6 +48,7 @@ class TransaksiController extends GetxController {
     }
   }
 
+  // Update Transaksi
   Future<bool> updateTransaksi(
     int nomorUnik,
     String namaPelanggan,
@@ -82,6 +85,7 @@ class TransaksiController extends GetxController {
     }
   }
 
+  // Count Transaksi yang di dashboard
   Future<int> countTransactions() async {
     try {
       QuerySnapshot querySnapshot =
@@ -93,6 +97,8 @@ class TransaksiController extends GetxController {
     }
   }
 
+  
+  // Calculate Income
   Future<double> income() async {
     try {
       QuerySnapshot querySnapshot =
@@ -115,6 +121,7 @@ class TransaksiController extends GetxController {
     }
   }
 
+  // Multiple items in transactions
   Future<bool> addMultipleTransaksi(List<TransactionsM> transaksiList) async {
     try {
       var batch = FirebaseFirestore.instance.batch();
@@ -129,6 +136,7 @@ class TransaksiController extends GetxController {
     }
   }
 
+  // Get transaksi by unik(Detail)
   Future<TransactionsM> getTransaksiByUnik(int nomorUnik) async {
     try {
       QuerySnapshot querySnapshot = await transaksiCollection

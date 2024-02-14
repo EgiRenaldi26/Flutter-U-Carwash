@@ -9,6 +9,7 @@ class LogController {
   final AuthController _authController = Get.find<AuthController>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Log Activity
   Future<void> addLog(String activity) async {
     try {
       String userName = _authController.userName.value;
@@ -32,6 +33,7 @@ class LogController {
     });
   }
 
+  // Count Log Dashboard
   Future<int> countLog() async {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('logs').get();

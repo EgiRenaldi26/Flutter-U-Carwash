@@ -19,7 +19,8 @@ class AuthController extends GetxController {
   UserRole getCurrentUserRole() {
     return userRole.value;
   }
-
+  
+  // FUngsi untuk Create User
   Future<void> register(String password, String role, String name,
       String username, String created_at, String updated_at) async {
     try {
@@ -39,6 +40,7 @@ class AuthController extends GetxController {
     }
   }
 
+  //fungsi update users
   Future<void> updateUser(String userId, String role, String name,
       String password, String username, String updated_at) async {
     try {
@@ -56,16 +58,18 @@ class AuthController extends GetxController {
     }
   }
 
+  // fungsi delete user
   Future<bool> deleteUser(String id) async {
     try {
       await _firestore.collection('users').doc(id).delete();
       return true;
     } catch (e) {
-      print('Error deleting book: $e');
+      print('Error deleting Products: $e');
       return false;
     }
   }
 
+  // fungsi login
   Future<void> login(String username, String password) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -131,6 +135,7 @@ class AuthController extends GetxController {
     }
   }
 
+  // fungsi update password
   Future<void> updatePassword(
       String userId, String newPassword, String confirmPassword) async {
     try {
@@ -150,6 +155,7 @@ class AuthController extends GetxController {
     }
   }
 
+  // fungsi logout
   Future<void> signOut() async {
     // Tampilkan dialog konfirmasi
     bool? confirmLogout = await Get.defaultDialog<bool>(
@@ -208,12 +214,13 @@ class AuthController extends GetxController {
     }
   }
 
+  // Count Users di controller
   Future<int> countUsers() async {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('users').get();
       return querySnapshot.size;
     } catch (e) {
-      print('Error counting books: $e');
+      print('Error counting Products: $e');
       return 0;
     }
   }
@@ -224,7 +231,7 @@ class AuthController extends GetxController {
           await _firestore.collection('products').get();
       return querySnapshot.size;
     } catch (e) {
-      print('Error counting books: $e');
+      print('Error counting Products: $e');
       return 0;
     }
   }
