@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:cucimobil_app/controller/transactionController.dart';
 import 'package:cucimobil_app/model/Transactions.dart';
 import 'package:cucimobil_app/model/TransactionsItem.dart';
@@ -22,14 +23,55 @@ class TransaksiSukses extends StatefulWidget {
 }
 
 class _TransaksiSuksesState extends State<TransaksiSukses> {
+  late BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+  bool _connected = false;
   late Future<TransactionsM> _futureTransaction;
   final currencyFormatter =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+
+  Future<void> _printInvoice(TransactionsM transaksi) async {
+    try {
+      final Uint8List pdfBytes = await EmsPdfService().generateEMSPDF(
+        transaksi.nomorunik,
+        transaksi.namapelanggan,
+        transaksi.items,
+        transaksi.totalbelanja,
+        transaksi.uangbayar,
+        transaksi.uangkembali,
+        transaksi.created_at,
+      );
+
+      // Check if the printer is connected
+      if (_connected) {
+        await bluetooth.write(pdfBytes as String);
+      } else {
+        await EmsPdfService().savePdfFile("invoice Transaksi", pdfBytes);
+      }
+    } catch (e) {
+      print('Error generating PDF: $e');
+      // Handle error
+    }
+  }
+
+  Future<void> _checkBluetoothConnection() async {
+    try {
+      bool? isConnected = await bluetooth.isConnected;
+      setState(() {
+        _connected = isConnected ?? false;
+      });
+    } catch (e) {
+      print('Error checking Bluetooth connection: $e');
+      setState(() {
+        _connected = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _futureTransaction = _fetchTransaksiData(int.parse(widget.transactionId));
+    _checkBluetoothConnection();
   }
 
   Future<TransactionsM> _fetchTransaksiData(int nomorUnik) async {
@@ -41,6 +83,33 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
       print('Error fetching transaction data: $e');
       rethrow;
     }
+  }
+
+  Widget buildProductDetailRow(TransactionItem item) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '${item.namaProduk} x ${item.qty}',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey),
+          ),
+          Text(
+            '${currencyFormatter.format(item.totalBelanja)}',
+            style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -186,7 +255,7 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 5),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: DataTable(
@@ -194,6 +263,14 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                       DataColumn(
                           label: Text(
                         'Nama Produk',
+                        style: TextStyle(
+                          fontFamily: "courier",
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                      DataColumn(
+                          label: Text(
+                        'Harga Satuan',
                         style: TextStyle(
                           fontFamily: "courier",
                           fontWeight: FontWeight.bold,
@@ -219,6 +296,9 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                     rows: transaksi.items.map((item) {
                       return DataRow(cells: [
                         DataCell(Text(item.namaProduk,
+                            style: TextStyle(fontFamily: 'Courier'))),
+                        DataCell(Text(
+                            currencyFormatter.format(item.hargaProduk),
                             style: TextStyle(fontFamily: 'Courier'))),
                         DataCell(Text(item.qty.toString(),
                             style: TextStyle(fontFamily: 'Courier'))),
@@ -266,69 +346,65 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Uang Kembali :",
-                      style: TextStyle(
-                        fontFamily: "Courier",
-                        fontWeight: FontWeight.bold,
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: 500,
+                    height: 50,
+                    decoration: BoxDecoration(
+                        color: warna.ungu,
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Uang Kembali :",
+                            style: TextStyle(
+                              fontFamily: "Courier",
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                            ),
+                          ),
+                          Text(
+                            "${currencyFormatter.format(transaksi.uangkembali)}",
+                            style: TextStyle(
+                              fontFamily: "Courier",
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      "${currencyFormatter.format(transaksi.uangkembali)}",
-                      style: TextStyle(
-                        fontFamily: "Courier",
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 SizedBox(height: 15),
                 Divider(thickness: 2),
-                Container(
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.only(top: 20),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        final Uint8List pdfBytes =
-                            await EmsPdfService().generateEMSPDF(
-                          transaksi.nomorunik,
-                          transaksi.namapelanggan,
-                          transaksi
-                              .items, // Sesuaikan dengan properti yang sesuai dari objek transaksi
-                          transaksi.totalbelanja,
-                          transaksi.uangbayar,
-                          transaksi.uangkembali,
-                          transaksi.created_at,
-                        );
-
-                        await EmsPdfService()
-                            .savePdfFile("invoice Transaksi", pdfBytes);
-                      } catch (e) {
-                        print('Error generating PDF: $e');
-                        // Handle error
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF573F7B),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                      minimumSize: Size(400, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await _checkBluetoothConnection();
+                    await _printInvoice(transaksi);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF573F7B),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    minimumSize: Size(400, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.print, color: Colors.white),
-                        SizedBox(width: 20),
-                        Text("GENERATE INVOICE",
-                            style: TextStyle(color: Colors.white)),
-                      ],
-                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.print, color: Colors.white),
+                      SizedBox(width: 20),
+                      Text("GENERATE INVOICE",
+                          style: TextStyle(color: Colors.white)),
+                    ],
                   ),
                 ),
               ],
@@ -338,33 +414,4 @@ class _TransaksiSuksesState extends State<TransaksiSukses> {
       ),
     );
   }
-}
-
-Widget buildProductDetailRow(TransactionItem item) {
-  final currencyFormatter =
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
-  return Container(
-    margin: EdgeInsets.symmetric(vertical: 5),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          '${item.namaProduk} x ${item.qty}',
-          style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey),
-        ),
-        Text(
-          '${currencyFormatter.format(item.totalBelanja)}',
-          style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey),
-        ),
-      ],
-    ),
-  );
 }

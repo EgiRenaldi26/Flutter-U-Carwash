@@ -103,12 +103,12 @@ class _TransactionsState extends State<Transactions> {
         automaticallyImplyLeading: false,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(15), // Atur nilai sesuai keinginan
+            bottom: Radius.circular(20), // Atur nilai sesuai keinginan
           ),
         ),
         title: Center(
           child: Text(
-            'Transaksi',
+            'Transactions',
             style: TextStyle(
               fontFamily: 'OpenSans',
               fontSize: 20,
@@ -170,6 +170,7 @@ class _TransactionsState extends State<Transactions> {
                                     SnackBar(
                                       content: Text(
                                           'Please select a date to generate the PDF.'),
+                                      backgroundColor: warna.ungu,
                                       duration: Duration(seconds: 2),
                                     ),
                                   );
@@ -197,7 +198,7 @@ class _TransactionsState extends State<Transactions> {
                       ),
                     ),
                     Text(
-                      "Filtering by Tanggal",
+                      "Filtering by Date",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -207,7 +208,7 @@ class _TransactionsState extends State<Transactions> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'All Transaksi',
+                      'All Transactions',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontFamily: 'OpenSans',
@@ -235,7 +236,6 @@ class _TransactionsState extends State<Transactions> {
                 ? Center(
                     child: Column(
                       children: [
-                        SizedBox(height: 100),
                         Icon(
                           Icons.sentiment_dissatisfied_outlined,
                           size: 50,
@@ -347,54 +347,59 @@ class _TransactionsState extends State<Transactions> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.end,
                                                   children: [
-                                                    TextButton(
-                                                      onPressed: () async {
-                                                        int nomorUnik =
-                                                            transaction
-                                                                    .nomorunik ??
-                                                                0;
-                                                        var result = await Get.to(
-                                                            () => TransaksiDetail(
-                                                                nomorUnik:
-                                                                    nomorUnik));
-                                                      },
-                                                      child: Text("Detail"),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        Get.to(
-                                                            () =>
-                                                                TransaksiPdf(),
-                                                            arguments: {
-                                                              'id':
-                                                                  filteredTransaksi[
-                                                                          index]
-                                                                      .id,
-                                                              'nomorunik':
+                                                    currentUserRole ==
+                                                            UserRole.Admin
+                                                        ? TextButton(
+                                                            onPressed:
+                                                                () async {
+                                                              int nomorUnik =
                                                                   transaction
-                                                                      .nomorunik,
-                                                              'namapelanggan':
-                                                                  namaPembeli,
-                                                              'uangbayar':
-                                                                  transaction
-                                                                      .uangbayar,
-                                                              'items':
-                                                                  transaction
-                                                                      .items,
-                                                              'totalbelanja':
-                                                                  transaction
-                                                                      .totalbelanja,
-                                                              'uangkembali':
-                                                                  transaction
-                                                                      .uangkembali,
-                                                              'created_at':
-                                                                  transaction
-                                                                      .created_at,
-                                                            });
-                                                      },
-                                                      child: Text("Laporan"),
-                                                    ),
+                                                                          .nomorunik ??
+                                                                      0;
+                                                              var result = await Get.to(() =>
+                                                                  TransaksiDetail(
+                                                                      nomorUnik:
+                                                                          nomorUnik));
+                                                            },
+                                                            child:
+                                                                Text("Detail"),
+                                                          )
+                                                        : TextButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  context);
+                                                              Get.to(
+                                                                  () =>
+                                                                      TransaksiPdf(),
+                                                                  arguments: {
+                                                                    'id': filteredTransaksi[
+                                                                            index]
+                                                                        .id,
+                                                                    'nomorunik':
+                                                                        transaction
+                                                                            .nomorunik,
+                                                                    'namapelanggan':
+                                                                        namaPembeli,
+                                                                    'uangbayar':
+                                                                        transaction
+                                                                            .uangbayar,
+                                                                    'items':
+                                                                        transaction
+                                                                            .items,
+                                                                    'totalbelanja':
+                                                                        transaction
+                                                                            .totalbelanja,
+                                                                    'uangkembali':
+                                                                        transaction
+                                                                            .uangkembali,
+                                                                    'created_at':
+                                                                        transaction
+                                                                            .created_at,
+                                                                  });
+                                                            },
+                                                            child:
+                                                                Text("Laporan"),
+                                                          ),
                                                   ],
                                                 ),
                                               ),

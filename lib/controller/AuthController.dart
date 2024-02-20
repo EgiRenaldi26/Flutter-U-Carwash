@@ -19,12 +19,34 @@ class AuthController extends GetxController {
   UserRole getCurrentUserRole() {
     return userRole.value;
   }
-  
+
   // FUngsi untuk Create User
-  Future<void> register(String password, String role, String name,
+  Future<void> register(String id, String password, String role, String name,
       String username, String created_at, String updated_at) async {
     try {
+      // Cek apakah username sudah digunakan
+      var query = await _firestore
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .get();
+      if (query.docs.isNotEmpty) {
+        Get.snackbar('Registration Error', 'Username sudah ada',
+            icon: Icon(
+              Icons.cancel,
+              color: Colors.red, // Change the color to green or any other color
+            ),
+            snackPosition: SnackPosition.TOP,
+            margin: EdgeInsets.only(bottom: 75.0),
+            backgroundColor: warna.putih,
+            colorText: Colors.black,
+            titleText: SizedBox.shrink(), // Menyembunyikan teks judul
+            snackStyle: SnackStyle.FLOATING);
+
+        return; // Keluar dari fungsi jika username sudah ada
+      }
+
       UserM newUser = UserM(
+        id: id,
         password: password,
         role: role,
         name: name,
@@ -34,16 +56,48 @@ class AuthController extends GetxController {
       );
 
       await _firestore.collection('users').add(newUser.toJson());
+      Get.back();
+      Get.snackbar('Registration Success', 'User created successfully',
+          icon: Icon(
+            Icons.check_circle,
+            color: Colors.green, // Change the color to green or any other color
+          ),
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.only(bottom: 75.0),
+          backgroundColor: warna.putih,
+          colorText: Colors.black,
+          titleText: SizedBox.shrink(), // Menyembunyikan teks judul
+          snackStyle: SnackStyle.FLOATING);
     } catch (e) {
+      // Menampilkan snackbar error jika terjadi kesalahan
       Get.snackbar('Registration Error', e.toString(),
-          snackPosition: SnackPosition.BOTTOM);
+          snackPosition: SnackPosition.TOP);
     }
   }
 
-  //fungsi update users
   Future<void> updateUser(String userId, String role, String name,
       String password, String username, String updated_at) async {
     try {
+      // Cek apakah username sudah digunakan
+      var query = await _firestore
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .get();
+      if (query.docs.isNotEmpty && query.docs.first.id != userId) {
+        Get.snackbar('Update Error', 'Username sudah ada',
+            icon: Icon(
+              Icons.cancel,
+              color: Colors.red, // Change the color to green or any other color
+            ),
+            snackPosition: SnackPosition.TOP,
+            margin: EdgeInsets.only(bottom: 75.0),
+            backgroundColor: warna.putih,
+            colorText: Colors.black,
+            titleText: SizedBox.shrink(), // Menyembunyikan teks judul
+            snackStyle: SnackStyle.FLOATING);
+        return; // Keluar dari fungsi jika username sudah adaS
+      }
+
       await _firestore.collection('users').doc(userId).update({
         'role': role,
         'name': name,
@@ -51,7 +105,22 @@ class AuthController extends GetxController {
         'username': username,
         'updated_at': updated_at,
       });
-      Get.snackbar('Success', 'User data updated successfully');
+
+      Get.back();
+      Get.snackbar(
+        'Success',
+        'User data updated successfully',
+        icon: Icon(
+          Icons.check_circle,
+          color: Colors.green, // Change the color to green or any other color
+        ),
+        snackPosition: SnackPosition.TOP,
+        margin: EdgeInsets.only(bottom: 75.0),
+        backgroundColor: warna.putih,
+        colorText: Colors.black,
+        titleText: SizedBox.shrink(), // Menyembunyikan teks judul
+        snackStyle: SnackStyle.FLOATING,
+      );
     } catch (e) {
       Get.snackbar('Update Error', e.toString(),
           snackPosition: SnackPosition.BOTTOM);
@@ -109,7 +178,7 @@ class AuthController extends GetxController {
           'Welcome ${querySnapshot.docs.first['name']} Anda Sebagai ${querySnapshot.docs.first['role']}',
           snackPosition: SnackPosition.TOP,
           margin: EdgeInsets.only(bottom: 75.0),
-          backgroundColor: warna.nav,
+          backgroundColor: warna.ungu,
           colorText: warna.putih,
           titleText: SizedBox.shrink(), // Menyembunyikan teks judul
           snackStyle: SnackStyle.FLOATING,
@@ -120,9 +189,13 @@ class AuthController extends GetxController {
           'Login Error',
           'User not found or invalid credentials',
           snackPosition: SnackPosition.TOP,
-          margin: EdgeInsets.only(bottom: 75.0),
-          backgroundColor: warna.ungu,
-          colorText: warna.putih,
+          margin: EdgeInsets.only(
+            bottom: 75.0,
+            left: 30.0,
+            right: 30.0,
+          ),
+          backgroundColor: warna.putih,
+          colorText: warna.ungu,
           titleText: SizedBox.shrink(), // Menyembunyikan teks judul
           snackStyle: SnackStyle.FLOATING,
         );
@@ -191,9 +264,13 @@ class AuthController extends GetxController {
           'Sign Out',
           'You have been signed out',
           snackPosition: SnackPosition.TOP,
-          margin: EdgeInsets.only(bottom: 75.0),
-          backgroundColor: warna.ungu,
-          colorText: warna.putih,
+          margin: EdgeInsets.only(
+            bottom: 75.0,
+            left: 30.0,
+            right: 30.0,
+          ),
+          backgroundColor: warna.putih,
+          colorText: warna.ungu,
           titleText: SizedBox.shrink(), // Menyembunyikan teks judul
           snackStyle: SnackStyle.FLOATING,
         );
@@ -227,8 +304,7 @@ class AuthController extends GetxController {
 
   Future<int> countUser() async {
     try {
-      QuerySnapshot querySnapshot =
-          await _firestore.collection('products').get();
+      QuerySnapshot querySnapshot = await _firestore.collection('users').get();
       return querySnapshot.size;
     } catch (e) {
       print('Error counting Products: $e');

@@ -135,6 +135,9 @@ class _UserState extends State<User> {
                   return Center(
                     child: Column(
                       children: [
+                        SizedBox(
+                          height: 90,
+                        ),
                         Icon(
                           Icons.sentiment_dissatisfied_outlined,
                           size: 50,
@@ -142,7 +145,7 @@ class _UserState extends State<User> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Users tidak ditemukan',
+                          'Users not found',
                           style: TextStyle(
                             fontSize: 18,
                             fontFamily: 'Poppins',

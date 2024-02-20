@@ -2,6 +2,7 @@ class TransactionItem {
   String productId;
   String namaProduk;
   double hargaProduk;
+
   int qty;
   double totalBelanja;
 
@@ -11,7 +12,6 @@ class TransactionItem {
     required this.hargaProduk,
     required this.qty,
     required this.totalBelanja,
-   
   });
 
   Map<String, dynamic> toMap() {

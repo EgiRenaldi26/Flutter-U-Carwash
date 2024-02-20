@@ -135,7 +135,8 @@ class _ProductCreateState extends State<ProductCreate> {
 
                       if (success) {
                         _productController.shouldUpdate.value = true;
-                        _addLog('Created new Produk: $namaproduk');
+                        _addLog(
+                            'Created Produk ID : ${newProducts.id}, ${newProducts.namaproduk}');
                         Get.back();
                         Get.snackbar('Success', 'Produk added successfully!');
                       } else {

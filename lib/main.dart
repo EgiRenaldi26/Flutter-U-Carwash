@@ -59,7 +59,12 @@ class MyHomePage extends StatelessWidget {
   final AuthController _authController = Get.find<AuthController>();
 
   final List<List<IconData>> _roleIcons = [
-    [Icons.dashboard_outlined, Icons.person, Icons.car_crash_rounded],
+    [
+      Icons.dashboard_outlined,
+      Icons.person,
+      Icons.car_crash_rounded,
+      Icons.swap_horizontal_circle,
+    ],
     [Icons.dashboard_outlined, Icons.swap_horizontal_circle],
     [Icons.dashboard_outlined, Icons.swap_horizontal_circle, Icons.history],
     [
@@ -75,6 +80,7 @@ class MyHomePage extends StatelessWidget {
     Dashboard(),
     User(),
     Product(),
+    Transactions(),
   ];
 
   final List<Widget> _kasirOptions = <Widget>[

@@ -45,7 +45,7 @@ class _ProductState extends State<Product> {
         ),
         title: Center(
           child: Text(
-            'Paket',
+            'Carwash package',
             style: TextStyle(
               fontFamily: 'OpenSans',
               fontSize: 20,
@@ -63,24 +63,6 @@ class _ProductState extends State<Product> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  children: [
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Text(
-                      "Hi, ${_authController.userName}",
-                      style: TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
                 TextField(
                   onChanged: (value) {
                     queryProduk(value);
@@ -171,8 +153,7 @@ class _ProductState extends State<Product> {
                                               width: 50,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.rectangle,
-                                                color: Color.fromARGB(
-                                                    255, 92, 147, 223),
+                                                color: warna.ungu,
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(10)),
                                               ),
@@ -198,7 +179,7 @@ class _ProductState extends State<Product> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  'Cuci mobil terpercaya!',
+                                                  'Best Carwash!',
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: Colors.grey,
@@ -228,7 +209,7 @@ class _ProductState extends State<Product> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'All Paket',
+                                  'All Package',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontFamily: 'OpenSans',
@@ -248,6 +229,7 @@ class _ProductState extends State<Product> {
                               ],
                             ),
                           ),
+                          SizedBox(height: 50),
                           Icon(
                             Icons.sentiment_dissatisfied_outlined,
                             size: 50,
@@ -255,7 +237,7 @@ class _ProductState extends State<Product> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            'Produk tidak ditemukan',
+                            'Products not found',
                             style: TextStyle(
                               fontSize: 18,
                               fontFamily: 'Poppins',
@@ -313,8 +295,7 @@ class _ProductState extends State<Product> {
                                                   width: 50,
                                                   decoration: BoxDecoration(
                                                     shape: BoxShape.rectangle,
-                                                    color: Color.fromARGB(
-                                                        255, 92, 147, 223),
+                                                    color: warna.ungu,
                                                     borderRadius:
                                                         BorderRadius.all(
                                                             Radius.circular(
@@ -343,7 +324,7 @@ class _ProductState extends State<Product> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      'Cuci mobil terpercaya!',
+                                                      'Best Carwash!',
                                                       style: TextStyle(
                                                         fontSize: 12,
                                                         color: Colors.grey,
@@ -375,7 +356,7 @@ class _ProductState extends State<Product> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'All Paket',
+                                      'All Package',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         fontFamily: 'OpenSans',
@@ -429,14 +410,15 @@ class _ProductState extends State<Product> {
                                           height: 200,
                                           width: 160,
                                           decoration: BoxDecoration(
-                                              color: warna.putih,
+                                              color: const Color.fromARGB(
+                                                  255, 255, 255, 255),
                                               borderRadius: BorderRadius.all(
-                                                Radius.circular(10),
+                                                Radius.circular(5),
                                               ),
                                               boxShadow: [
                                                 BoxShadow(
                                                   color: Colors.grey,
-                                                  blurRadius: 2,
+                                                  blurRadius: 1,
                                                   offset: Offset(0, 1),
                                                 ),
                                               ]),
@@ -541,7 +523,7 @@ class _ProductState extends State<Product> {
         width: double.infinity,
         decoration: BoxDecoration(
           border: Border.all(color: warna.ungu, width: 3), // Add border color
-          borderRadius: BorderRadius.circular(30), // Border radius
+          borderRadius: BorderRadius.circular(10), // Border radius
         ),
         child: Material(
           color: Colors.transparent,

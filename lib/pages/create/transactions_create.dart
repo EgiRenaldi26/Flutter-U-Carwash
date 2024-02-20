@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cucimobil_app/controller/logController.dart';
 import 'package:cucimobil_app/controller/transactionController.dart';
+import 'package:cucimobil_app/model/Products.dart';
 import 'package:cucimobil_app/model/Transactions.dart';
 import 'package:cucimobil_app/model/TransactionsItem.dart';
 import 'package:cucimobil_app/pages/succestransaction.dart';
@@ -177,11 +178,29 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          Text('${product['product']}',
-                                              style: TextStyle(
-                                                  fontFamily: 'Poppins',
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold)),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text('${product['product']}',
+                                                    style: TextStyle(
+                                                        fontFamily: 'Poppins',
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text(
+                                                    "${currencyFormatter.format(product['hargaproduk'])}",
+                                                    style: TextStyle(
+                                                        fontFamily: 'Poppins',
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ],
+                                            ),
+                                          ),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -240,6 +259,19 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
                                                   ),
                                                 ),
                                               ),
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  'Subtotal : ${currencyFormatter.format(product['total'])}',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
                                             ],
                                           ),
                                         ],
@@ -343,16 +375,27 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
 
     setState(() {
       produkList = querySnapshot.docs
-          .map((doc) => doc['namaproduk'].toString())
+          .map((doc) => ProductM(
+                id: doc['id'],
+                namaproduk: doc['namaproduk'],
+                hargaproduk: doc['hargaproduk'],
+                deskripsi: doc['deskripsi'],
+                createdat: doc['createdat'],
+                updatedat: doc['updatedat'],
+              ))
+          .toList()
+          .cast<ProductM>()
+          .map((product) => product.namaproduk)
           .toList();
     });
   }
 
   void _updateQty(int index, int newQty) {
     if (newQty > 0) {
+      double hargaproduk = selectedProducts[index]['hargaproduk'];
       setState(() {
         selectedProducts[index]['qty'] = newQty;
-        selectedProducts[index]['total'] = _hargaProduk * newQty;
+        selectedProducts[index]['total'] = hargaproduk * newQty;
         _totalBelanja = selectedProducts.fold(
             0.0, (sum, product) => sum + product['total']);
       });
@@ -370,6 +413,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
         setState(() {
           selectedProducts[existingProductIndex]['qty'] += qty;
           selectedProducts[existingProductIndex]['total'] += _hargaProduk * qty;
+
           _totalBelanja = selectedProducts.fold(
               0.0, (sum, product) => sum + product['total']);
         });
@@ -378,6 +422,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
         Map<String, dynamic> selectedProductData = {
           'id': _selectedProductId!,
           'product': _selectedProduct!,
+          'hargaproduk': _hargaProduk,
           'qty': qty,
           'total': totalBelanja,
         };
@@ -419,7 +464,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
         return TransactionItem(
           productId: product['id'],
           namaProduk: product['product'],
-          hargaProduk: _hargaProduk,
+          hargaProduk: product['hargaproduk'],
           qty: product['qty'],
           totalBelanja: product['total'],
         );
@@ -439,6 +484,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
       bool success = await _transaksiController.addTransaksi(newTransaksi);
 
       if (success) {
+        _addLog("Add Transactions :  $namapelanggan");
         Get.snackbar('Success', 'Transaksi added successfully');
 
         String newtransactionId = _nomor_unik.toString();
@@ -473,7 +519,7 @@ class _TransactionsCreateState extends State<TransactionsCreate> {
 
         setState(() {
           _hargaProduk = hargaproduk;
-          _selectedProductId = productId; // Set selected product ID
+          _selectedProductId = productId;
           _hargaProdukController.text =
               "Rp. ${_hargaProduk.toStringAsFixed(2)}";
         });

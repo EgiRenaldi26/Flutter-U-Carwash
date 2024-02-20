@@ -1,4 +1,9 @@
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cucimobil_app/model/Transactions.dart';
 import 'package:cucimobil_app/model/TransactionsItem.dart';
+import 'package:cucimobil_app/pages/invoice/transaksi_struk.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,8 +15,11 @@ class TransaksiPdf extends StatefulWidget {
 }
 
 class _TransaksiPdfState extends State<TransaksiPdf> {
+  late TransactionsM transaksi;
   final currencyFormatter =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+  final CollectionReference transaksiCollection =
+      FirebaseFirestore.instance.collection('transactions');
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +59,7 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
         padding: EdgeInsets.all(20),
         margin: EdgeInsets.all(20),
         alignment: AlignmentDirectional.centerStart,
-        color: warna.putih,
+        color: Color.fromARGB(255, 255, 255, 255),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -249,25 +257,75 @@ class _TransaksiPdfState extends State<TransaksiPdf> {
                     SizedBox(
                       height: 30,
                     ),
-                    Container(
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.only(top: 20),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF573F7B),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 20),
-                            minimumSize: Size(400, 50)),
-                        child: Text(
-                          "Selesai",
-                          style: TextStyle(
-                            color: Colors.white,
+                    Row(
+                      children: [
+                        Container(
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.only(top: 20),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Get.back();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF573F7B),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 20),
+                              minimumSize: Size(200, 65),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Text(
+                              "Selesai",
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        Container(
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.only(top: 20, left: 10),
+                          child: ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  final Uint8List pdfBytes =
+                                      await TransaksiStruk().generateEMSPDF({
+                                    'id': id,
+                                    'nomorunik': nomorunik,
+                                    'namapelanggan': namapelanggan,
+                                    'uangbayar': uangbayar,
+                                    'items': items,
+                                    'totalbelanja': totalbelanja,
+                                    'uangkembali': uangkembali,
+                                    'created_at': created_at,
+                                  });
+
+                                  await TransaksiStruk().savePdfFile(
+                                      "struk_transaksi_", pdfBytes);
+                                } catch (e) {
+                                  print("Error generating or saving PDF: $e");
+                                  // Handle error, for example show a snackbar
+                                  Get.snackbar('Error',
+                                      'Failed to generate or save PDF');
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF573F7B),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 20),
+                                minimumSize: Size(40, 40),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.print,
+                                color: warna.putih,
+                                size: 25,
+                              )),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -303,7 +361,7 @@ Widget buildProductDetailRow(TransactionItem item) {
               ),
             ),
             Text(
-              "Harga : ${item.totalBelanja}",
+              "${currencyFormatter.format(item.hargaProduk)} x ${item.qty}",
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
@@ -313,7 +371,7 @@ Widget buildProductDetailRow(TransactionItem item) {
           ],
         ),
         Text(
-          "x ${item.qty}",
+          "${currencyFormatter.format(item.totalBelanja)}",
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.bold,

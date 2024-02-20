@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cucimobil_app/controller/AuthController.dart';
 import 'package:cucimobil_app/controller/logController.dart';
 import 'package:cucimobil_app/pages/theme/coloring.dart';
@@ -67,7 +69,7 @@ class _UserCreateState extends State<UserCreate> {
                   _createUsername(value);
                 },
                 decoration: InputDecoration(
-                  hintText: 'Exm. Renaldi Nurmazid',
+                  hintText: 'Exm. Egi Renaldi',
                   label: Text(
                     'Nama Lengkap',
                     style: TextStyle(
@@ -88,9 +90,8 @@ class _UserCreateState extends State<UserCreate> {
               SizedBox(height: 20),
               TextField(
                 controller: usernameController,
-                enabled: false,
                 decoration: InputDecoration(
-                  hintText: 'Exm. Renaldi Nurmazid',
+                  hintText: 'Exm. Egi Renaldi',
                   label: Text(
                     'Username',
                     style: TextStyle(
@@ -165,6 +166,7 @@ class _UserCreateState extends State<UserCreate> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    String id = Random().nextInt(1000).toString();
                     String password = passwordController.text.trim();
                     String name = nameController.text.trim();
                     String username = usernameController.text.trim();
@@ -175,41 +177,40 @@ class _UserCreateState extends State<UserCreate> {
                         password.isNotEmpty &&
                         name.isNotEmpty &&
                         _selectedRole != null) {
-                      _authController.register(password, _selectedRole!, name,
-                          username, created_at, updated_at);
-                      Get.back();
-                      _addLog("Add users : $username");
-                      Get.snackbar(
-                        'Success',
-                        'User Add successfully!',
-                        icon: Icon(
-                          Icons.check_circle,
-                          color: Colors
-                              .green, // Change the color to green or any other color
-                        ),
-                        snackPosition: SnackPosition.TOP,
-                        margin: EdgeInsets.only(bottom: 75.0),
-                        backgroundColor: warna.putih,
-                        colorText: Colors.black,
-                        titleText:
-                            SizedBox.shrink(), // Menyembunyikan teks judul
-                        snackStyle: SnackStyle.FLOATING,
-                      );
+                      try {
+                        _authController.register(id, password, _selectedRole!,
+                            name, username, created_at, updated_at);
+                        _addLog("Add users : $username");
+                      } catch (e) {
+                        // Menampilkan snackbar error jika operasi register gagal
+                        Get.snackbar(
+                          'Error',
+                          e.toString(),
+                          icon: Icon(
+                            Icons.cancel,
+                            color: Colors.red,
+                          ),
+                          snackPosition: SnackPosition.TOP,
+                          margin: EdgeInsets.only(bottom: 75.0),
+                          backgroundColor: warna.putih,
+                          colorText: Colors.black,
+                          titleText: SizedBox.shrink(),
+                          snackStyle: SnackStyle.FLOATING,
+                        );
+                      }
                     } else {
                       Get.snackbar(
                         'Error',
-                        'Please fill in all fields',
+                        'Username already exists or Please fill in all fields',
                         icon: Icon(
                           Icons.cancel,
-                          color: Colors
-                              .red, // Change the color to green or any other color
+                          color: Colors.red,
                         ),
                         snackPosition: SnackPosition.TOP,
                         margin: EdgeInsets.only(bottom: 75.0),
                         backgroundColor: warna.putih,
                         colorText: Colors.black,
-                        titleText:
-                            SizedBox.shrink(), // Menyembunyikan teks judul
+                        titleText: SizedBox.shrink(),
                         snackStyle: SnackStyle.FLOATING,
                       );
                     }

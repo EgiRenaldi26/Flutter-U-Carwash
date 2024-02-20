@@ -44,6 +44,8 @@ dependencies:
   open_file: ^3.3.2
   path_provider: ^2.1.2
   syncfusion_flutter_charts: ^24.2.5
+  blue_thermal_printer: ^1.2.3
+  flutter_bluetooth_serial: ^0.4.0
 
 dev_dependencies:
   flutter_test:

@@ -31,12 +31,12 @@ class _LogState extends State<Log> {
         automaticallyImplyLeading: false,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(15), // Adjust the value as needed
+            bottom: Radius.circular(20), // Adjust the value as needed
           ),
         ),
         title: Center(
           child: Text(
-            'Log',
+            'Log Activity',
             style: TextStyle(
               fontFamily: 'OpenSans',
               fontSize: 20,
@@ -145,6 +145,7 @@ class _LogState extends State<Log> {
                   itemBuilder: (context, index) {
                     var logsData =
                         filteredlogs[index].data() as Map<String, dynamic>;
+
                     String name = logsData['userName' ?? 'NoName'];
                     String activity = logsData['activity'];
                     // Check if 'created_At' field exists and is a Timestamp
@@ -154,9 +155,10 @@ class _LogState extends State<Log> {
                         createdTimestamp?.toDate() ?? DateTime.now();
 
                     return Container(
+                      height: 90,
                       padding: EdgeInsets.only(
-                        right: 10,
-                        left: 10,
+                        right: 20,
+                        left: 20,
                       ),
                       child: ListTile(
                         contentPadding:
@@ -165,10 +167,9 @@ class _LogState extends State<Log> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         tileColor: Colors.white,
-                        onTap: () {
-                          // Add your onTap logic here if needed
-                        },
                         leading: Container(
+                          height: 50,
+                          width: 50,
                           margin: EdgeInsets.only(right: 8.0),
                           decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
@@ -181,13 +182,24 @@ class _LogState extends State<Log> {
                             color: Colors.white,
                           ),
                         ),
-                        title: Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: "Poppins",
-                            fontWeight: FontWeight.bold,
-                          ),
+                        title: Row(
+                          children: [
+                            Icon(
+                              Icons.person,
+                              size: 20,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              name,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                         subtitle: Text(
                           activity,

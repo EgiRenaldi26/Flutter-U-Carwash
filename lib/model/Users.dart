@@ -1,4 +1,5 @@
 class UserM {
+  final String id;
   final String password;
   final String role;
   final String name;
@@ -7,6 +8,7 @@ class UserM {
   final String updated_at;
 
   UserM({
+    required this.id,
     required this.password,
     required this.role,
     required this.name,
@@ -17,6 +19,7 @@ class UserM {
 
   factory UserM.fromJson(Map<String, dynamic> json) {
     return UserM(
+      id: json['id'],
       password: json['password'],
       role: json['role'],
       name: json['name'],
@@ -28,6 +31,7 @@ class UserM {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'password': password,
       'role': role,
       'name': name,

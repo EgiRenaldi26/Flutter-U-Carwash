@@ -159,23 +159,12 @@ class _UserDetailState extends State<UserDetail> {
                     String userId = id;
                     _authController.updateUser(userId, _selectedRole!, name,
                         password, username, updated_at);
-                    Get.back();
-                    _addLog("Updated users with title: $username");
+
+                    _addLog("Updated users : $username");
                   } else {
                     Get.snackbar(
                       'Error',
                       'Please fill all fields',
-                      icon: Icon(
-                        Icons.check_circle,
-                        color: Colors
-                            .green, // Change the color to green or any other color
-                      ),
-                      snackPosition: SnackPosition.TOP,
-                      margin: EdgeInsets.only(bottom: 75.0),
-                      backgroundColor: warna.putih,
-                      colorText: Colors.black,
-                      titleText: SizedBox.shrink(), // Menyembunyikan teks judul
-                      snackStyle: SnackStyle.FLOATING,
                     );
                   }
                 },

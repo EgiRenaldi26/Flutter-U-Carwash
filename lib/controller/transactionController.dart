@@ -7,6 +7,7 @@ class TransaksiController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final RxList<TransactionsM> transaksiList = <TransactionsM>[].obs;
   RxBool shouldUpdate = false.obs;
+  RxDouble totalIncome = 0.0.obs;
 
   final CollectionReference transaksiCollection =
       FirebaseFirestore.instance.collection('transactions');
@@ -76,6 +77,7 @@ class TransaksiController extends GetxController {
           'updated_at': updatedat,
         });
         return true;
+        
       } else {
         throw Exception('Transaction not found for nomorunik: $nomorUnik');
       }

@@ -6,7 +6,6 @@ import 'package:cucimobil_app/pages/theme/coloring.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -35,7 +34,7 @@ class _DashboardState extends State<Dashboard> {
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: warna.background,
+      backgroundColor: Colors.purple.shade50,
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -46,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
             },
           ),
         ),
-        backgroundColor: warna.background,
+        backgroundColor: Colors.purple.shade50,
         title: Center(
           child: Text(
             "Dashboard",
@@ -178,9 +177,18 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
-                    fontSize: 14,
+                    fontSize: 20,
                   ),
                 ),
+                Text(
+                  "good luck! you are an , $role",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 11,
+                  ),
+                ),
+
                 SizedBox(height: 10),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -192,13 +200,20 @@ class _DashboardState extends State<Dashboard> {
                         width: 300,
                         margin: EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
-                          color: warna.box1,
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              HSLColor.fromAHSL(1.0, 265, 0.32, 0.36).toColor(),
+                              HSLColor.fromAHSL(1.0, 256, 0.73, 0.78).toColor(),
+                            ],
+                          ),
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 10,
-                              offset: Offset(0, 1),
+                              color: Color.fromARGB(255, 28, 28, 28),
+                              blurRadius: 1,
+                              offset: Offset(1, 1),
                             ),
                           ],
                         ),
@@ -302,117 +317,6 @@ class _DashboardState extends State<Dashboard> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        height: 160,
-                        width: 300,
-                        margin: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              HSLColor.fromAHSL(1.0, 265, 0.32, 0.36).toColor(),
-                              HSLColor.fromAHSL(1.0, 256, 0.73, 0.78).toColor(),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 10,
-                              offset: Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Today",
-                                    style: TextStyle(
-                                      color: warna.putih,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 20),
-                              child: Row(
-                                children: [
-                                  IconTheme(
-                                    data: IconThemeData(
-                                      color: Colors.white,
-                                      size: 30.0,
-                                    ),
-                                    child: Icon(
-                                      Icons.date_range,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    "${_getFormattedDate()}",
-                                    style: TextStyle(
-                                      color: warna.putih,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 17,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 50,
-                                  ),
-                                  IconTheme(
-                                    data: IconThemeData(
-                                      color: Colors.white,
-                                      size: 50.0,
-                                    ),
-                                    child: Icon(
-                                      Icons.cloud_sync,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Center(
-                              child: Container(
-                                width: 250.0,
-                                child: Divider(
-                                  thickness: 4.0,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 30),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Date Today",
-                                    style: TextStyle(
-                                      color: warna.putih,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -420,7 +324,7 @@ class _DashboardState extends State<Dashboard> {
                   height: 15,
                 ),
                 Text(
-                  "List Menu",
+                  "Menu List",
                   style: TextStyle(
                     fontFamily: "Poppins",
                     fontWeight: FontWeight.bold,
@@ -442,61 +346,6 @@ class _DashboardState extends State<Dashboard> {
                 if (currentUserRole == UserRole.Owner) ...[
                   _buildOwnerDashboardList(),
                 ],
-
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  "Bar Chart",
-                  style: TextStyle(
-                    fontFamily: "Poppins",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Colors.black87,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: 20,
-                    top: 20,
-                  ),
-                  child: FutureBuilder<double>(
-                    future: _transactionController
-                        .income(), // Menggunakan tanggal saat ini, bisa diganti sesuai kebutuhan
-                    builder: (context, snapshot) {
-                      double totalIncome = snapshot.data ?? 0;
-                      NumberFormat currencyFormatter =
-                          NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
-                      String formattedIncome =
-                          currencyFormatter.format(totalIncome);
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else {
-                        return SfCartesianChart(
-                          primaryXAxis: CategoryAxis(),
-                          series: <CartesianSeries>[
-                            BarSeries<dynamic, String>(
-                              dataSource: [
-                                {
-                                  'category': 'Income',
-                                  'value': currencyFormatter.format(totalIncome)
-                                },
-                              ],
-                              xValueMapper: (data, _) => data['category'],
-                              yValueMapper: (data, _) => double.parse(
-                                  data['value']
-                                      .replaceAll(RegExp(r'[^0-9]'), '')),
-                              dataLabelSettings:
-                                  DataLabelSettings(isVisible: true),
-                            ),
-                          ],
-                        );
-                      }
-                    },
-                  ),
-                ),
               ],
             ),
           ),
@@ -518,7 +367,7 @@ class _DashboardState extends State<Dashboard> {
             } else {
               int productsCount = snapshot.data ?? 0;
               return DashboardList(
-                title: 'Data Products',
+                title: 'Products ',
                 icon: Icons.car_crash_rounded,
                 dataCount: productsCount,
               );
@@ -535,9 +384,26 @@ class _DashboardState extends State<Dashboard> {
             } else {
               int usersCount = snapshot.data ?? 0;
               return DashboardList(
-                title: 'Data Users',
+                title: 'Users ',
                 icon: Icons.person_2,
                 dataCount: usersCount,
+              );
+            }
+          },
+        ),
+        FutureBuilder<int>(
+          future: _transactionController.countTransactions(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              int transactionsCount = snapshot.data ?? 0;
+              return DashboardList(
+                title: 'Transactions ',
+                icon: Icons.swap_horizontal_circle,
+                dataCount: transactionsCount,
               );
             }
           },
@@ -557,7 +423,7 @@ class _DashboardState extends State<Dashboard> {
         } else {
           int transactionsCount = snapshot.data ?? 0;
           return DashboardList(
-            title: 'Data Transaksi',
+            title: 'Transactions ',
             icon: Icons.swap_horizontal_circle,
             dataCount: transactionsCount,
           );
@@ -579,7 +445,7 @@ class _DashboardState extends State<Dashboard> {
             } else {
               int transactionsCount = snapshot.data ?? 0;
               return DashboardList(
-                title: 'Data Transaksi',
+                title: 'Transacions ',
                 icon: Icons.swap_horizontal_circle,
                 dataCount: transactionsCount,
               );
@@ -596,7 +462,7 @@ class _DashboardState extends State<Dashboard> {
             } else {
               int logCount = snapshot.data ?? 0;
               return DashboardList(
-                title: 'Data Log',
+                title: 'Log Activity',
                 icon: Icons.history,
                 dataCount: logCount,
               );
@@ -628,11 +494,20 @@ class DashboardList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.all(10),
       height: 90,
       width: 340,
       decoration: BoxDecoration(
-        color: warna.background,
+        color: warna.putih,
         borderRadius: BorderRadius.all(Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 1,
+            offset: Offset(0, 1),
+          ),
+        ],
       ),
       child: ListTile(
         title: Text(

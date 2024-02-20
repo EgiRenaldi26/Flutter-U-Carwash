@@ -1,27 +1,28 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:cucimobil_app/model/TransactionsItem.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-class EmsPdfService {
-  final currencyFormatter =
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+class TransaksiStruk {
+  
+      
 
-  Future<Uint8List> generateEMSPDF(
-    int nomorunik,
-    String namapelanggan,
-    List<TransactionItem> items,
-    double totalbelanja,
-    double uangbayar,
-    double uangkembali,
-    String created_at,
-  ) async {
-    final pdf = pw.Document();
+  Future<Uint8List> generateEMSPDF(Map<String, dynamic> args) async {
+   final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
+   final String id = args['id'] ?? '';
+   final int nomorunik = args['nomorunik'] ?? 0;
+   final String namapelanggan = args['namapelanggan'] ?? '';
+   final double uangbayar = args['uangbayar'] ?? 0.0;
+   final double totalbelanja = args['totalbelanja'] ?? 0.0;
+   final double uangkembali = args['uangkembali'] ?? 0.0;
+   final String created_at = args['created_at'] ?? '';
+   final List<dynamic> items = args['items'] ?? [];
+
+   final pdf = pw.Document();
 
     pdf.addPage(
       pw.Page(

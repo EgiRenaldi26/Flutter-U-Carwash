@@ -70,6 +70,7 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
         padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
+            SizedBox(height: 10),
             TextField(
               controller: _namaPelangganController,
               decoration: InputDecoration(
@@ -175,12 +176,30 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      Text(
-                                        '${product.namaProduk}',
-                                        style: TextStyle(
-                                            fontFamily: 'Poppins',
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 10, top: 10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '${product.namaProduk}',
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              '${currencyFormatter.format(product.hargaProduk)}',
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 12,
+                                                  fontWeight:
+                                                      FontWeight.normal),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       Row(
                                         mainAxisAlignment:
@@ -238,6 +257,18 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
                                               ),
                                             ),
                                           ),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              'Subtotal : ${currencyFormatter.format(product.totalBelanja)}',
+                                              style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold)),
                                         ],
                                       ),
                                     ],
@@ -336,9 +367,9 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
                       updatedat,
                     );
 
-                    _addLog("Transaksi updated");
-                    _showSuccessDialog();
                     Get.back();
+                    _showSuccessDialog();
+                    _addLog("Updated Transactions : $namapelanggan");
                     Get.snackbar(
                         'Success', 'Transaction updated successfully!');
                   } else {
@@ -442,8 +473,8 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
         setState(() {
           _hargaProduk = hargaProduk; // Perbarui harga produk
           _hargaProdukController.text = currencyFormatter.format(hargaProduk);
-          addSelectedProductToContainer(
-              _qty); // Tambahkan produk baru setelah harga produk diperbarui
+          _selectedProductChanged(
+              selectedBook, _qty); // Perbarui produk yang dipilih
         });
       }
     } else {
@@ -461,8 +492,6 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
         selectedProducts[index].totalBelanja =
             selectedProducts[index].hargaProduk * newQty;
       });
-      addSelectedProductToContainer(
-          newQty); // Tambahkan produk baru setelah qty diperbarui
       calculateTotalBelanja();
     }
   }
@@ -476,7 +505,7 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
           content: Text("Transaction updated successfully!"),
           actions: <Widget>[
             TextButton(
-              child: Text("OK"),
+              child: Text("Yes"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -488,8 +517,8 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
   }
 
   void calculateTotalBelanja() {
-    double totalBelanja = selectedProducts.fold(
-        0.0, (sum, product) => sum + product.totalBelanja);
+    double totalBelanja =
+        selectedProducts.fold(0.0, (sum, item) => sum + item.totalBelanja);
     setState(() {
       _totalBelanja = totalBelanja;
       _totalBelanjaController.text = currencyFormatter.format(totalBelanja);
@@ -500,6 +529,7 @@ class _TransaksiDetailState extends State<TransaksiDetail> {
     setState(() {
       _selectedProduct = selectedProduct;
       addSelectedProductToContainer(qty);
+      calculateTotalBelanja();
     });
   }
 

@@ -31,11 +31,12 @@ class ProductDetail extends StatelessWidget {
             Get.back();
           },
         ),
-        title: Center(
-          child: Text(
-            "Form Paket",
-            style:
-                TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
+        title: Text(
+          'Form Paket',
+          style: TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -134,7 +135,7 @@ class ProductDetail extends StatelessWidget {
 
                         _productController.shouldUpdate.value = true;
                         Get.back();
-
+                        _addLog("Update Products :  $namaproduk ");
                         Get.snackbar(
                           'Success',
                           'Produk updated successfully!',
